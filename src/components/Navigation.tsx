@@ -1,9 +1,10 @@
-
 import React, { useState } from 'react';
 import { ChevronDown, User, Shield, Users, GraduationCap } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const Navigation = () => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const userTypes = [
     { id: 'admin', label: 'Admin', icon: Shield },
@@ -15,7 +16,13 @@ const Navigation = () => {
   const handleLogin = (userType: string) => {
     console.log(`Login as ${userType}`);
     setIsDropdownOpen(false);
-    // Add your login logic here
+    
+    if (userType === 'admin') {
+      navigate('/admin/login');
+    } else {
+      // Add other user type login logic here later
+      console.log(`${userType} login not implemented yet`);
+    }
   };
 
   return (
