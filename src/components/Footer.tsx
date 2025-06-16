@@ -1,0 +1,77 @@
+
+import React from 'react';
+import { Facebook, Twitter, Instagram, Linkedin, Mail } from 'lucide-react';
+
+const Footer = () => {
+  return (
+    <footer className="bg-gray-900 text-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid md:grid-cols-4 gap-8">
+          {/* Company Info */}
+          <div className="space-y-4">
+            <h3 className="text-2xl font-bold text-blue-400">DormHub</h3>
+            <p className="text-gray-300">
+              The leading dormitory management platform for modern educational institutions.
+            </p>
+            <div className="flex space-x-4">
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Facebook size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Twitter size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Instagram size={20} />
+              </a>
+              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+                <Linkedin size={20} />
+              </a>
+            </div>
+          </div>
+
+          {/* Quick Links */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Quick Links</h4>
+            <ul className="space-y-2">
+              <li><a href="#about" className="text-gray-300 hover:text-white transition-colors">About Us</a></li>
+              <li><a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a></li>
+              <li><a href="#contact" className="text-gray-300 hover:text-white transition-colors">Contact</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a></li>
+            </ul>
+          </div>
+
+          {/* Services */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Services</h4>
+            <ul className="space-y-2">
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Room Management</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Student Portal</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Security System</a></li>
+              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Analytics</a></li>
+            </ul>
+          </div>
+
+          {/* Contact Info */}
+          <div>
+            <h4 className="text-lg font-semibold mb-4">Contact Info</h4>
+            <div className="space-y-2 text-gray-300">
+              <div className="flex items-center space-x-2">
+                <Mail size={16} />
+                <span>support@dormhub.com</span>
+              </div>
+              <p>123 Education Street</p>
+              <p>Campus City, CC 12345</p>
+              <p>+1 (555) 123-4567</p>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+          <p>&copy; 2024 DormHub. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
+export default Footer;
