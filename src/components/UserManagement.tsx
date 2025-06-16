@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { UserPlus, Edit, Trash2, Shield, Users, User, GraduationCap } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
@@ -34,7 +33,11 @@ interface User {
   createdAt: string;
 }
 
-const UserManagement = () => {
+interface UserManagementProps {
+  onUsersChange?: (users: User[]) => void;
+}
+
+const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
   const [users, setUsers] = useState<User[]>([
     { id: '1', username: 'admin', email: 'admin@dormhub.com', role: 'admin', createdAt: '2024-01-01' },
     { id: '2', username: 'supervisor1', email: 'supervisor1@dormhub.com', role: 'supervisor', createdAt: '2024-01-02' },
@@ -49,6 +52,12 @@ const UserManagement = () => {
     password: '',
     role: 'student' as const
   });
+
+  useEffect(() => {
+    if (onUsersChange) {
+      onUsersChange(users);
+    }
+  }, [users, onUsersChange]);
 
   const getRoleIcon = (role: string) => {
     switch (role) {

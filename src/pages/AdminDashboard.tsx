@@ -6,15 +6,39 @@ import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import UserManagement from '../components/UserManagement';
 
+interface User {
+  id: string;
+  username: string;
+  email: string;
+  role: 'admin' | 'supervisor' | 'parent' | 'student';
+  createdAt: string;
+}
+
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
+  const [users, setUsers] = useState<User[]>([]);
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
+
+  const handleUsersChange = (updatedUsers: User[]) => {
+    setUsers(updatedUsers);
+  };
+
+  const getUserCounts = () => {
+    return {
+      admin: users.filter(user => user.role === 'admin').length,
+      supervisor: users.filter(user => user.role === 'supervisor').length,
+      parent: users.filter(user => user.role === 'parent').length,
+      student: users.filter(user => user.role === 'student').length,
+    };
+  };
+
+  const userCounts = getUserCounts();
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Shield },
@@ -80,7 +104,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Total Admins</p>
-                  <p className="text-2xl font-bold text-gray-900">2</p>
+                  <p className="text-2xl font-bold text-gray-900">{userCounts.admin}</p>
                 </div>
               </div>
             </div>
@@ -92,7 +116,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Supervisors</p>
-                  <p className="text-2xl font-bold text-gray-900">5</p>
+                  <p className="text-2xl font-bold text-gray-900">{userCounts.supervisor}</p>
                 </div>
               </div>
             </div>
@@ -104,7 +128,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Parents</p>
-                  <p className="text-2xl font-bold text-gray-900">120</p>
+                  <p className="text-2xl font-bold text-gray-900">{userCounts.parent}</p>
                 </div>
               </div>
             </div>
@@ -116,14 +140,14 @@ const AdminDashboard = () => {
                 </div>
                 <div className="ml-4">
                   <p className="text-sm font-medium text-gray-600">Students</p>
-                  <p className="text-2xl font-bold text-gray-900">450</p>
+                  <p className="text-2xl font-bold text-gray-900">{userCounts.student}</p>
                 </div>
               </div>
             </div>
           </div>
         )}
 
-        {activeTab === 'users' && <UserManagement />}
+        {activeTab === 'users' && <UserManagement onUsersChange={handleUsersChange} />}
       </div>
     </div>
   );
