@@ -56,10 +56,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       
       // Check all user tables for matching credentials
       const tables = [
-        { table: 'admin_users', role: 'admin' },
-        { table: 'supervisor_users', role: 'supervisor' },
-        { table: 'parent_users', role: 'parent' },
-        { table: 'student_users', role: 'student' }
+        { table: 'admin_users' as const, role: 'admin' as const },
+        { table: 'supervisor_users' as const, role: 'supervisor' as const },
+        { table: 'parent_users' as const, role: 'parent' as const },
+        { table: 'student_users' as const, role: 'student' as const }
       ];
 
       for (const { table, role } of tables) {
@@ -80,7 +80,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             name: data.name,
             username: data.username,
             email: data.email,
-            role: role as 'admin' | 'supervisor' | 'parent' | 'student'
+            role: role
           };
           
           setUser(newUser);

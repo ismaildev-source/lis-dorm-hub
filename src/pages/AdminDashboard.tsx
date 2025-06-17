@@ -1,48 +1,61 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Users, UserPlus, Shield, GraduationCap, User } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
-import UserManagement from '../components/UserManagement';
-
-interface User {
-  id: string;
-  username: string;
-  email: string;
-  role: 'admin' | 'supervisor' | 'parent' | 'student';
-  createdAt: string;
-}
+import AdminUserManagement from '../components/AdminUserManagement';
+import SupervisorUserManagement from '../components/SupervisorUserManagement';
+import StudentUserManagement from '../components/StudentUserManagement';
+import ParentUserManagement from '../components/ParentUserManagement';
+import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboard = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState('overview');
-  const [users, setUsers] = useState<User[]>([]);
+  const [userCounts, setUserCounts] = useState({
+    admin: 0,
+    supervisor: 0,
+    parent: 0,
+    student: 0,
+  });
 
   const handleLogout = () => {
     logout();
     navigate('/');
   };
 
-  const handleUsersChange = (updatedUsers: User[]) => {
-    setUsers(updatedUsers);
+  const fetchUserCounts = async () => {
+    try {
+      const [adminResult, supervisorResult, parentResult, studentResult] = await Promise.all([
+        supabase.from('admin_users').select('id', { count: 'exact' }),
+        supabase.from('supervisor_users').select('id', { count: 'exact' }),
+        supabase.from('parent_users').select('id', { count: 'exact' }),
+        supabase.from('student_users').select('id', { count: 'exact' })
+      ]);
+
+      setUserCounts({
+        admin: adminResult.count || 0,
+        supervisor: supervisorResult.count || 0,
+        parent: parentResult.count || 0,
+        student: studentResult.count || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching user counts:', error);
+    }
   };
 
-  const getUserCounts = () => {
-    return {
-      admin: users.filter(user => user.role === 'admin').length,
-      supervisor: users.filter(user => user.role === 'supervisor').length,
-      parent: users.filter(user => user.role === 'parent').length,
-      student: users.filter(user => user.role === 'student').length,
-    };
-  };
-
-  const userCounts = getUserCounts();
+  useEffect(() => {
+    fetchUserCounts();
+  }, []);
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Shield },
-    { id: 'users', label: 'User Management', icon: Users },
+    { id: 'admins', label: 'Admin Users', icon: Shield },
+    { id: 'supervisors', label: 'Supervisors', icon: Users },
+    { id: 'students', label: 'Students', icon: GraduationCap },
+    { id: 'parents', label: 'Parents', icon: User },
   ];
 
   return (
@@ -55,7 +68,7 @@ const AdminDashboard = () => {
               <h1 className="text-2xl font-bold text-blue-600">DormHub Admin</h1>
             </div>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user?.username}</span>
+              <span className="text-gray-700">Welcome, {user?.name}</span>
               <Button
                 onClick={handleLogout}
                 variant="outline"
@@ -147,7 +160,10 @@ const AdminDashboard = () => {
           </div>
         )}
 
-        {activeTab === 'users' && <UserManagement onUsersChange={handleUsersChange} />}
+        {activeTab === 'admins' && <AdminUserManagement onUserCountChange={fetchUserCounts} />}
+        {activeTab === 'supervisors' && <SupervisorUserManagement onUserCountChange={fetchUserCounts} />}
+        {activeTab === 'students' && <StudentUserManagement onUserCountChange={fetchUserCounts} />}
+        {activeTab === 'parents' && <ParentUserManagement onUserCountChange={fetchUserCounts} />}
       </div>
     </div>
   );
