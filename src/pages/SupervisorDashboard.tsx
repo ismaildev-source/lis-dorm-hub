@@ -5,6 +5,7 @@ import { LogOut, Calendar, Users } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Textarea } from '../components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
@@ -34,6 +35,7 @@ interface AttendanceRecord {
   is_noise: boolean;
   is_leave_early: boolean;
   is_doing_nothing: boolean;
+  comments: string;
 }
 
 const SupervisorDashboard = () => {
@@ -41,7 +43,7 @@ const SupervisorDashboard = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [students, setStudents] = useState<Student[]>([]);
-  const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
+  const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
   // Form state
@@ -56,6 +58,7 @@ const SupervisorDashboard = () => {
     is_noise: false,
     is_leave_early: false,
     is_doing_nothing: false,
+    comments: '',
   });
 
   const handleLogout = () => {
@@ -72,8 +75,7 @@ const SupervisorDashboard = () => {
     try {
       const { data, error } = await supabase
         .from('student_users')
-        .select('id, name, grade_level')
-        .eq('supervisor_id', user?.id);
+        .select('id, name, grade_level');
       
       if (error) throw error;
       setStudents(data || []);
@@ -141,6 +143,7 @@ const SupervisorDashboard = () => {
         is_noise: false,
         is_leave_early: false,
         is_doing_nothing: false,
+        comments: '',
       });
 
       fetchAttendanceRecords();
@@ -302,6 +305,17 @@ const SupervisorDashboard = () => {
                 </div>
               </div>
 
+              <div>
+                <Label htmlFor="comments">Comments</Label>
+                <Textarea
+                  id="comments"
+                  value={attendanceForm.comments}
+                  onChange={(e) => setAttendanceForm({...attendanceForm, comments: e.target.value})}
+                  placeholder="Enter any additional comments..."
+                  rows={3}
+                />
+              </div>
+
               <Button 
                 onClick={handleSubmitAttendance} 
                 className="w-full"
@@ -329,6 +343,8 @@ const SupervisorDashboard = () => {
                       <TableHead>Status</TableHead>
                       <TableHead>Date</TableHead>
                       <TableHead>Study Type</TableHead>
+                      <TableHead>Behavioral Notes</TableHead>
+                      <TableHead>Comments</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -346,6 +362,19 @@ const SupervisorDashboard = () => {
                         </TableCell>
                         <TableCell>{record.date}</TableCell>
                         <TableCell>{record.study_type}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Late</span>}
+                            {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Noise</span>}
+                            {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Left Early</span>}
+                            {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Inactive</span>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-32 truncate" title={record.comments}>
+                            {record.comments}
+                          </div>
+                        </TableCell>
                       </TableRow>
                     ))}
                   </TableBody>

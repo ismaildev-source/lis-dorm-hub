@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus } from 'lucide-react';
+import { Trash2, Edit, Plus, Download, Search } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type GenderType = 'Male' | 'Female';
@@ -29,6 +29,8 @@ interface AdminUserManagementProps {
 const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountChange }) => {
   const { toast } = useToast();
   const [adminUsers, setAdminUsers] = useState<AdminUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<AdminUser[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<AdminUser | null>(null);
@@ -40,6 +42,15 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
   useEffect(() => {
     fetchAdminUsers();
   }, []);
+
+  useEffect(() => {
+    const filtered = adminUsers.filter(user =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [adminUsers, searchTerm]);
 
   const fetchAdminUsers = async () => {
     setLoading(true);
@@ -137,75 +148,114 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
     }
   };
 
+  const exportToCSV = () => {
+    const headers = ['Name', 'Username', 'Gender', 'Email'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredUsers.map(user => [
+        user.name,
+        user.username,
+        user.gender,
+        user.email
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'admin_users.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Admin Users</CardTitle>
-        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" /> Add Admin
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Admin User</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="admin-name">Name</Label>
-                <Input
-                  id="admin-name"
-                  value={adminForm.name}
-                  onChange={(e) => setAdminForm({...adminForm, name: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="admin-username">Username</Label>
-                <Input
-                  id="admin-username"
-                  value={adminForm.username}
-                  onChange={(e) => setAdminForm({...adminForm, username: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="admin-gender">Gender</Label>
-                <Select value={adminForm.gender} onValueChange={(value: GenderType) => setAdminForm({...adminForm, gender: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="admin-email">Email</Label>
-                <Input
-                  id="admin-email"
-                  type="email"
-                  value={adminForm.email}
-                  onChange={(e) => setAdminForm({...adminForm, email: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="admin-password">Password</Label>
-                <Input
-                  id="admin-password"
-                  type="password"
-                  value={adminForm.password}
-                  onChange={(e) => setAdminForm({...adminForm, password: e.target.value})}
-                />
-              </div>
-              <Button onClick={handleAddUser} className="w-full">
-                Add Admin
+        <div className="flex gap-2">
+          <Button onClick={exportToCSV} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" /> Add Admin
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Admin User</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="admin-name">Name</Label>
+                  <Input
+                    id="admin-name"
+                    value={adminForm.name}
+                    onChange={(e) => setAdminForm({...adminForm, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="admin-username">Username</Label>
+                  <Input
+                    id="admin-username"
+                    value={adminForm.username}
+                    onChange={(e) => setAdminForm({...adminForm, username: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="admin-gender">Gender</Label>
+                  <Select value={adminForm.gender} onValueChange={(value: GenderType) => setAdminForm({...adminForm, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="admin-email">Email</Label>
+                  <Input
+                    id="admin-email"
+                    type="email"
+                    value={adminForm.email}
+                    onChange={(e) => setAdminForm({...adminForm, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="admin-password">Password</Label>
+                  <Input
+                    id="admin-password"
+                    type="password"
+                    value={adminForm.password}
+                    onChange={(e) => setAdminForm({...adminForm, password: e.target.value})}
+                  />
+                </div>
+                <Button onClick={handleAddUser} className="w-full">
+                  Add Admin
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search admin users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -217,7 +267,7 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
             </TableRow>
           </TableHeader>
           <TableBody>
-            {adminUsers.map((admin) => (
+            {filteredUsers.map((admin) => (
               <TableRow key={admin.id}>
                 <TableCell>{admin.name}</TableCell>
                 <TableCell>{admin.username}</TableCell>
@@ -261,10 +311,30 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
                   />
                 </div>
                 <div>
+                  <Label>Gender</Label>
+                  <Select value={editingItem.gender} onValueChange={(value: GenderType) => setEditingItem({...editingItem, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
                   <Label>Email</Label>
                   <Input
                     value={editingItem.email || ''}
                     onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Password</Label>
+                  <Input
+                    type="password"
+                    value={editingItem.password || ''}
+                    onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
                   />
                 </div>
                 <Button onClick={handleEditUser} className="w-full">

@@ -1,13 +1,15 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, Users, UserPlus, Shield, GraduationCap, User } from 'lucide-react';
+import { LogOut, Users, UserPlus, Shield, GraduationCap, User, Calendar, Download } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import AdminUserManagement from '../components/AdminUserManagement';
 import SupervisorUserManagement from '../components/SupervisorUserManagement';
 import StudentUserManagement from '../components/StudentUserManagement';
 import ParentUserManagement from '../components/ParentUserManagement';
+import { Card, CardContent, CardHeader, CardTitle } from '../components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '../components/ui/table';
 import { supabase } from '@/integrations/supabase/client';
 
 const AdminDashboard = () => {
@@ -20,6 +22,7 @@ const AdminDashboard = () => {
     parent: 0,
     student: 0,
   });
+  const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
 
   const handleLogout = () => {
     logout();
@@ -46,9 +49,57 @@ const AdminDashboard = () => {
     }
   };
 
+  const fetchAttendanceRecords = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('attendance')
+        .select(`
+          *,
+          student_users (name),
+          supervisor_users (name)
+        `)
+        .order('date', { ascending: false });
+      
+      if (error) throw error;
+      setAttendanceRecords(data || []);
+    } catch (error) {
+      console.error('Error fetching attendance records:', error);
+    }
+  };
+
   useEffect(() => {
     fetchUserCounts();
+    fetchAttendanceRecords();
   }, []);
+
+  const exportAttendanceToCSV = () => {
+    const headers = ['Date', 'Student', 'Status', 'Study Type', 'Grade', 'Supervisor', 'Absent Reason', 'Late', 'Noise', 'Left Early', 'Inactive', 'Comments'];
+    const csvContent = [
+      headers.join(','),
+      ...attendanceRecords.map(record => [
+        record.date,
+        record.student_users?.name || 'N/A',
+        record.attendance_status,
+        record.study_type,
+        record.grade_level,
+        record.supervisor_users?.name || 'N/A',
+        record.absent_reason || '',
+        record.is_late ? 'Yes' : 'No',
+        record.is_noise ? 'Yes' : 'No',
+        record.is_leave_early ? 'Yes' : 'No',
+        record.is_doing_nothing ? 'Yes' : 'No',
+        record.comments || ''
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'attendance_records.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Shield },
@@ -56,6 +107,7 @@ const AdminDashboard = () => {
     { id: 'supervisors', label: 'Supervisors', icon: Users },
     { id: 'students', label: 'Students', icon: GraduationCap },
     { id: 'parents', label: 'Parents', icon: User },
+    { id: 'attendance', label: 'Attendance Records', icon: Calendar },
   ];
 
   return (
@@ -164,6 +216,67 @@ const AdminDashboard = () => {
         {activeTab === 'supervisors' && <SupervisorUserManagement onUserCountChange={fetchUserCounts} />}
         {activeTab === 'students' && <StudentUserManagement onUserCountChange={fetchUserCounts} />}
         {activeTab === 'parents' && <ParentUserManagement onUserCountChange={fetchUserCounts} />}
+        
+        {activeTab === 'attendance' && (
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>All Attendance Records</CardTitle>
+              <Button onClick={exportAttendanceToCSV} variant="outline" size="sm">
+                <Download className="w-4 h-4 mr-2" />
+                Export CSV
+              </Button>
+            </CardHeader>
+            <CardContent>
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Date</TableHead>
+                    <TableHead>Student</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>Study Type</TableHead>
+                    <TableHead>Grade</TableHead>
+                    <TableHead>Supervisor</TableHead>
+                    <TableHead>Behavioral Issues</TableHead>
+                    <TableHead>Comments</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {attendanceRecords.map((record) => (
+                    <TableRow key={record.id}>
+                      <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
+                      <TableCell>{record.student_users?.name || 'N/A'}</TableCell>
+                      <TableCell>
+                        <span className={`px-2 py-1 rounded-full text-xs ${
+                          record.attendance_status === 'Present' 
+                            ? 'bg-green-100 text-green-800' 
+                            : 'bg-red-100 text-red-800'
+                        }`}>
+                          {record.attendance_status}
+                        </span>
+                      </TableCell>
+                      <TableCell>{record.study_type}</TableCell>
+                      <TableCell>{record.grade_level}</TableCell>
+                      <TableCell>{record.supervisor_users?.name || 'N/A'}</TableCell>
+                      <TableCell>
+                        <div className="flex flex-wrap gap-1">
+                          {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Late</span>}
+                          {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Noise</span>}
+                          {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Left Early</span>}
+                          {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Inactive</span>}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div className="max-w-32 truncate" title={record.comments}>
+                          {record.comments}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </div>
   );

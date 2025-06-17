@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -8,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus } from 'lucide-react';
+import { Trash2, Edit, Plus, Download, Search } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type GenderType = 'Male' | 'Female';
@@ -32,6 +31,8 @@ interface SupervisorUserManagementProps {
 const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onUserCountChange }) => {
   const { toast } = useToast();
   const [supervisorUsers, setSupervisorUsers] = useState<SupervisorUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<SupervisorUser[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<SupervisorUser | null>(null);
@@ -45,6 +46,16 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
   useEffect(() => {
     fetchSupervisorUsers();
   }, []);
+
+  useEffect(() => {
+    const filtered = supervisorUsers.filter(user =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.room.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [supervisorUsers, searchTerm]);
 
   const fetchSupervisorUsers = async () => {
     setLoading(true);
@@ -142,105 +153,147 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
     }
   };
 
+  const exportToCSV = () => {
+    const headers = ['Name', 'Username', 'Gender', 'Date of Birth', 'Room', 'Contact', 'Email'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredUsers.map(user => [
+        user.name,
+        user.username,
+        user.gender,
+        user.date_of_birth,
+        user.room,
+        user.contact,
+        user.email
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'supervisor_users.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Supervisor Users</CardTitle>
-        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" /> Add Supervisor
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>Add Supervisor</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 max-h-96 overflow-y-auto">
-              <div>
-                <Label htmlFor="supervisor-name">Name</Label>
-                <Input
-                  id="supervisor-name"
-                  value={supervisorForm.name}
-                  onChange={(e) => setSupervisorForm({...supervisorForm, name: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="supervisor-username">Username</Label>
-                <Input
-                  id="supervisor-username"
-                  value={supervisorForm.username}
-                  onChange={(e) => setSupervisorForm({...supervisorForm, username: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="supervisor-gender">Gender</Label>
-                <Select value={supervisorForm.gender} onValueChange={(value: GenderType) => setSupervisorForm({...supervisorForm, gender: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="supervisor-dob">Date of Birth</Label>
-                <Input
-                  id="supervisor-dob"
-                  type="date"
-                  value={supervisorForm.date_of_birth}
-                  onChange={(e) => setSupervisorForm({...supervisorForm, date_of_birth: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="supervisor-room">Room</Label>
-                <Select value={supervisorForm.room} onValueChange={(value) => setSupervisorForm({...supervisorForm, room: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {supervisorRooms.map(room => (
-                      <SelectItem key={room} value={room}>{room}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="supervisor-contact">Contact</Label>
-                <Input
-                  id="supervisor-contact"
-                  value={supervisorForm.contact}
-                  onChange={(e) => setSupervisorForm({...supervisorForm, contact: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="supervisor-email">Email</Label>
-                <Input
-                  id="supervisor-email"
-                  type="email"
-                  value={supervisorForm.email}
-                  onChange={(e) => setSupervisorForm({...supervisorForm, email: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="supervisor-password">Password</Label>
-                <Input
-                  id="supervisor-password"
-                  type="password"
-                  value={supervisorForm.password}
-                  onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
-                />
-              </div>
-              <Button onClick={handleAddUser} className="w-full">
-                Add Supervisor
+        <div className="flex gap-2">
+          <Button onClick={exportToCSV} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" /> Add Supervisor
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent className="max-w-2xl">
+              <DialogHeader>
+                <DialogTitle>Add Supervisor</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 max-h-96 overflow-y-auto">
+                <div>
+                  <Label htmlFor="supervisor-name">Name</Label>
+                  <Input
+                    id="supervisor-name"
+                    value={supervisorForm.name}
+                    onChange={(e) => setSupervisorForm({...supervisorForm, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-username">Username</Label>
+                  <Input
+                    id="supervisor-username"
+                    value={supervisorForm.username}
+                    onChange={(e) => setSupervisorForm({...supervisorForm, username: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-gender">Gender</Label>
+                  <Select value={supervisorForm.gender} onValueChange={(value: GenderType) => setSupervisorForm({...supervisorForm, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-dob">Date of Birth</Label>
+                  <Input
+                    id="supervisor-dob"
+                    type="date"
+                    value={supervisorForm.date_of_birth}
+                    onChange={(e) => setSupervisorForm({...supervisorForm, date_of_birth: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-room">Room</Label>
+                  <Select value={supervisorForm.room} onValueChange={(value) => setSupervisorForm({...supervisorForm, room: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {supervisorRooms.map(room => (
+                        <SelectItem key={room} value={room}>{room}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-contact">Contact</Label>
+                  <Input
+                    id="supervisor-contact"
+                    value={supervisorForm.contact}
+                    onChange={(e) => setSupervisorForm({...supervisorForm, contact: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-email">Email</Label>
+                  <Input
+                    id="supervisor-email"
+                    type="email"
+                    value={supervisorForm.email}
+                    onChange={(e) => setSupervisorForm({...supervisorForm, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="supervisor-password">Password</Label>
+                  <Input
+                    id="supervisor-password"
+                    type="password"
+                    value={supervisorForm.password}
+                    onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
+                  />
+                </div>
+                <Button onClick={handleAddUser} className="w-full">
+                  Add Supervisor
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
+        <div className="mb-4">
+          <div className="relative">
+            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Search supervisor users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="pl-8"
+            />
+          </div>
+        </div>
+
         <Table>
           <TableHeader>
             <TableRow>
@@ -254,7 +307,7 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
             </TableRow>
           </TableHeader>
           <TableBody>
-            {supervisorUsers.map((supervisor) => (
+            {filteredUsers.map((supervisor) => (
               <TableRow key={supervisor.id}>
                 <TableCell>{supervisor.name}</TableCell>
                 <TableCell>{supervisor.username}</TableCell>
@@ -280,11 +333,11 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
         {/* Edit Dialog */}
         {editingItem && (
           <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent>
+            <DialogContent className="max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Edit Supervisor User</DialogTitle>
               </DialogHeader>
-              <div className="space-y-4">
+              <div className="space-y-4 max-h-96 overflow-y-auto">
                 <div>
                   <Label>Name</Label>
                   <Input
@@ -300,10 +353,58 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
                   />
                 </div>
                 <div>
+                  <Label>Gender</Label>
+                  <Select value={editingItem.gender} onValueChange={(value: GenderType) => setEditingItem({...editingItem, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Date of Birth</Label>
+                  <Input
+                    type="date"
+                    value={editingItem.date_of_birth || ''}
+                    onChange={(e) => setEditingItem({...editingItem, date_of_birth: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Room</Label>
+                  <Select value={editingItem.room} onValueChange={(value) => setEditingItem({...editingItem, room: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {supervisorRooms.map(room => (
+                        <SelectItem key={room} value={room}>{room}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Contact</Label>
+                  <Input
+                    value={editingItem.contact || ''}
+                    onChange={(e) => setEditingItem({...editingItem, contact: e.target.value})}
+                  />
+                </div>
+                <div>
                   <Label>Email</Label>
                   <Input
                     value={editingItem.email || ''}
                     onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label>Password</Label>
+                  <Input
+                    type="password"
+                    value={editingItem.password || ''}
+                    onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
                   />
                 </div>
                 <Button onClick={handleEditUser} className="w-full">

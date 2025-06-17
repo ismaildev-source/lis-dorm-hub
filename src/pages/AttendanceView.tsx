@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, Eye, Home } from 'lucide-react';
+import { LogOut, Eye } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
@@ -25,6 +25,7 @@ interface AttendanceRecord {
   is_noise: boolean;
   is_leave_early: boolean;
   is_doing_nothing: boolean;
+  comments?: string;
   student_users: {
     name: string;
   };
@@ -115,15 +116,6 @@ const AttendanceView = () => {
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {user?.name}</span>
               <Button
-                onClick={() => navigate('/')}
-                variant="outline"
-                size="sm"
-                className="flex items-center space-x-2"
-              >
-                <Home size={16} />
-                <span>Home</span>
-              </Button>
-              <Button
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
@@ -166,6 +158,7 @@ const AttendanceView = () => {
                   <TableHead>Supervisor</TableHead>
                   <TableHead>Notes</TableHead>
                   <TableHead>Issues</TableHead>
+                  <TableHead>Comments</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -194,6 +187,11 @@ const AttendanceView = () => {
                             {badge}
                           </span>
                         ))}
+                      </div>
+                    </TableCell>
+                    <TableCell>
+                      <div className="max-w-32 truncate" title={record.comments}>
+                        {record.comments}
                       </div>
                     </TableCell>
                   </TableRow>
