@@ -11,7 +11,7 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="text-2xl font-bold text-blue-400">DormHub</h3>
             <p className="text-gray-300">
-              The leading dormitory management platform for modern educational institutions.
+              The leading dormitory Attendance management platform for modern educational institutions.
             </p>
             <div className="flex space-x-4">
               <a href="https://web.facebook.com/photo/?fbid=237439805562479&set=a.237439782229148&__tn__=%3C" className="text-gray-400 hover:text-blue-400 transition-colors">
