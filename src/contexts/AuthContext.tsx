@@ -1,17 +1,21 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { supabase } from '@/integrations/supabase/client';
 
 interface User {
   id: string;
+  name: string;
   username: string;
+  email: string;
   role: 'admin' | 'supervisor' | 'parent' | 'student';
 }
 
 interface AuthContextType {
   user: User | null;
-  login: (username: string, password: string, role: string) => boolean;
+  login: (username: string, password: string) => Promise<{ success: boolean; error?: string; user?: User }>;
   logout: () => void;
   isAuthenticated: boolean;
+  loading: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -26,28 +30,63 @@ export const useAuth = () => {
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     // Check if user is logged in from localStorage
-    const savedUser = localStorage.getItem('dormhub_user');
-    if (savedUser) {
-      setUser(JSON.parse(savedUser));
-    }
+    const checkUser = () => {
+      const savedUser = localStorage.getItem('dormhub_user');
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+      setLoading(false);
+    };
+    
+    checkUser();
   }, []);
 
-  const login = (username: string, password: string, role: string): boolean => {
-    // Simple demo authentication - in real app, this would be API call
-    if (role === 'admin' && username === 'admin' && password === 'admin123') {
-      const newUser: User = {
-        id: '1',
-        username: 'admin',
-        role: 'admin'
-      };
-      setUser(newUser);
-      localStorage.setItem('dormhub_user', JSON.stringify(newUser));
-      return true;
+  const login = async (username: string, password: string): Promise<{ success: boolean; error?: string; user?: User }> => {
+    try {
+      setLoading(true);
+      
+      // Check all user tables for matching credentials
+      const tables = [
+        { table: 'admin_users', role: 'admin' },
+        { table: 'supervisor_users', role: 'supervisor' },
+        { table: 'parent_users', role: 'parent' },
+        { table: 'student_users', role: 'student' }
+      ];
+
+      for (const { table, role } of tables) {
+        const { data, error } = await supabase
+          .from(table)
+          .select('*')
+          .eq('username', username)
+          .eq('password', password)
+          .single();
+
+        if (data && !error) {
+          const newUser: User = {
+            id: data.id,
+            name: data.name,
+            username: data.username,
+            email: data.email,
+            role: role as 'admin' | 'supervisor' | 'parent' | 'student'
+          };
+          
+          setUser(newUser);
+          localStorage.setItem('dormhub_user', JSON.stringify(newUser));
+          setLoading(false);
+          return { success: true, user: newUser };
+        }
+      }
+      
+      setLoading(false);
+      return { success: false, error: 'Invalid username or password' };
+    } catch (error) {
+      setLoading(false);
+      return { success: false, error: 'Login failed. Please try again.' };
     }
-    return false;
   };
 
   const logout = () => {
@@ -59,7 +98,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     user,
     login,
     logout,
-    isAuthenticated: !!user
+    isAuthenticated: !!user,
+    loading
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,8 +1,11 @@
+
 import React, { useState, useEffect } from 'react';
 import { UserPlus, Edit, Trash2, Shield, Users, User, GraduationCap } from 'lucide-react';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '../hooks/use-toast';
 import {
   Dialog,
   DialogContent,
@@ -27,6 +30,7 @@ import {
 
 interface User {
   id: string;
+  name: string;
   username: string;
   email: string;
   role: 'admin' | 'supervisor' | 'parent' | 'student';
@@ -38,26 +42,160 @@ interface UserManagementProps {
 }
 
 const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
-  const [users, setUsers] = useState<User[]>([
-    { id: '1', username: 'admin', email: 'admin@dormhub.com', role: 'admin', createdAt: '2024-01-01' },
-    { id: '2', username: 'supervisor1', email: 'supervisor1@dormhub.com', role: 'supervisor', createdAt: '2024-01-02' },
-    { id: '3', username: 'parent1', email: 'parent1@dormhub.com', role: 'parent', createdAt: '2024-01-03' },
-    { id: '4', username: 'student1', email: 'student1@dormhub.com', role: 'student', createdAt: '2024-01-04' },
-  ]);
-
+  const { toast } = useToast();
+  const [users, setUsers] = useState<User[]>([]);
+  const [students, setStudents] = useState<any[]>([]);
+  const [supervisors, setSupervisors] = useState<any[]>([]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
-  const [newUser, setNewUser] = useState({
-    username: '',
-    email: '',
-    password: '',
-    role: 'student' as const
+  const [selectedUserType, setSelectedUserType] = useState<'admin' | 'supervisor' | 'parent' | 'student'>('admin');
+  const [loading, setLoading] = useState(false);
+
+  const [adminForm, setAdminForm] = useState({
+    name: '', username: '', gender: 'Male', email: '', password: ''
+  });
+
+  const [supervisorForm, setSupervisorForm] = useState({
+    name: '', username: '', gender: 'Male', date_of_birth: '', room: 'Room S01', 
+    contact: '', email: '', password: ''
+  });
+
+  const [parentForm, setParentForm] = useState({
+    name: '', username: '', gender: 'Male', contact: '', email: '', 
+    password: '', student_id: ''
+  });
+
+  const [studentForm, setStudentForm] = useState({
+    name: '', username: '', age: '', grade_level: 'Year 9', date_of_birth: '',
+    stream: 'A', room: 'N103', shoe_rack_number: '', home_address: '',
+    email: '', password: '', supervisor_id: '', parent_name: '', parent_contact: ''
   });
 
   useEffect(() => {
-    if (onUsersChange) {
-      onUsersChange(users);
+    fetchAllUsers();
+    fetchStudents();
+    fetchSupervisors();
+  }, []);
+
+  const fetchAllUsers = async () => {
+    try {
+      // Fetch from all user tables
+      const [adminRes, supervisorRes, parentRes, studentRes] = await Promise.all([
+        supabase.from('admin_users').select('*'),
+        supabase.from('supervisor_users').select('*'),
+        supabase.from('parent_users').select('*'),
+        supabase.from('student_users').select('*')
+      ]);
+
+      const allUsers = [
+        ...(adminRes.data || []).map(u => ({ ...u, role: 'admin' as const, createdAt: u.created_at })),
+        ...(supervisorRes.data || []).map(u => ({ ...u, role: 'supervisor' as const, createdAt: u.created_at })),
+        ...(parentRes.data || []).map(u => ({ ...u, role: 'parent' as const, createdAt: u.created_at })),
+        ...(studentRes.data || []).map(u => ({ ...u, role: 'student' as const, createdAt: u.created_at }))
+      ];
+
+      setUsers(allUsers);
+      if (onUsersChange) {
+        onUsersChange(allUsers);
+      }
+    } catch (error) {
+      console.error('Error fetching users:', error);
     }
-  }, [users, onUsersChange]);
+  };
+
+  const fetchStudents = async () => {
+    const { data } = await supabase.from('student_users').select('*');
+    setStudents(data || []);
+  };
+
+  const fetchSupervisors = async () => {
+    const { data } = await supabase.from('supervisor_users').select('*');
+    setSupervisors(data || []);
+  };
+
+  const handleAddUser = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      let result;
+      switch (selectedUserType) {
+        case 'admin':
+          result = await supabase.from('admin_users').insert([adminForm]);
+          break;
+        case 'supervisor':
+          result = await supabase.from('supervisor_users').insert([supervisorForm]);
+          break;
+        case 'parent':
+          result = await supabase.from('parent_users').insert([parentForm]);
+          break;
+        case 'student':
+          result = await supabase.from('student_users').insert([{
+            ...studentForm,
+            age: studentForm.age ? parseInt(studentForm.age) : null
+          }]);
+          break;
+      }
+
+      if (result?.error) throw result.error;
+
+      toast({
+        title: "Success",
+        description: `${selectedUserType.charAt(0).toUpperCase() + selectedUserType.slice(1)} added successfully`,
+      });
+
+      // Reset forms
+      setAdminForm({ name: '', username: '', gender: 'Male', email: '', password: '' });
+      setSupervisorForm({ name: '', username: '', gender: 'Male', date_of_birth: '', room: 'Room S01', contact: '', email: '', password: '' });
+      setParentForm({ name: '', username: '', gender: 'Male', contact: '', email: '', password: '', student_id: '' });
+      setStudentForm({ name: '', username: '', age: '', grade_level: 'Year 9', date_of_birth: '', stream: 'A', room: 'N103', shoe_rack_number: '', home_address: '', email: '', password: '', supervisor_id: '', parent_name: '', parent_contact: '' });
+      
+      setIsAddDialogOpen(false);
+      fetchAllUsers();
+      fetchStudents();
+      fetchSupervisors();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: `Failed to add ${selectedUserType}`,
+        variant: "destructive",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteUser = async (id: string, role: string) => {
+    if (!confirm('Are you sure you want to delete this user?')) return;
+
+    try {
+      const tableMap = {
+        admin: 'admin_users',
+        supervisor: 'supervisor_users',
+        parent: 'parent_users',
+        student: 'student_users'
+      };
+
+      const { error } = await supabase
+        .from(tableMap[role as keyof typeof tableMap])
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success",
+        description: "User deleted successfully",
+      });
+
+      fetchAllUsers();
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to delete user",
+        variant: "destructive",
+      });
+    }
+  };
 
   const getRoleIcon = (role: string) => {
     switch (role) {
@@ -78,22 +216,392 @@ const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
     }
   };
 
-  const handleAddUser = (e: React.FormEvent) => {
-    e.preventDefault();
-    const user: User = {
-      id: Date.now().toString(),
-      username: newUser.username,
-      email: newUser.email,
-      role: newUser.role,
-      createdAt: new Date().toISOString().split('T')[0]
-    };
-    setUsers([...users, user]);
-    setNewUser({ username: '', email: '', password: '', role: 'student' });
-    setIsAddDialogOpen(false);
-  };
+  const renderUserForm = () => {
+    switch (selectedUserType) {
+      case 'admin':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={adminForm.name}
+                onChange={(e) => setAdminForm({...adminForm, name: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={adminForm.username}
+                onChange={(e) => setAdminForm({...adminForm, username: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="gender">Gender</Label>
+              <select
+                id="gender"
+                value={adminForm.gender}
+                onChange={(e) => setAdminForm({...adminForm, gender: e.target.value as 'Male' | 'Female'})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={adminForm.email}
+                onChange={(e) => setAdminForm({...adminForm, email: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={adminForm.password}
+                onChange={(e) => setAdminForm({...adminForm, password: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+        );
 
-  const handleDeleteUser = (id: string) => {
-    setUsers(users.filter(user => user.id !== id));
+      case 'supervisor':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={supervisorForm.name}
+                onChange={(e) => setSupervisorForm({...supervisorForm, name: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={supervisorForm.username}
+                onChange={(e) => setSupervisorForm({...supervisorForm, username: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="gender">Gender</Label>
+              <select
+                id="gender"
+                value={supervisorForm.gender}
+                onChange={(e) => setSupervisorForm({...supervisorForm, gender: e.target.value as 'Male' | 'Female'})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="date_of_birth">Date of Birth</Label>
+              <Input
+                id="date_of_birth"
+                type="date"
+                value={supervisorForm.date_of_birth}
+                onChange={(e) => setSupervisorForm({...supervisorForm, date_of_birth: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="room">Room</Label>
+              <select
+                id="room"
+                value={supervisorForm.room}
+                onChange={(e) => setSupervisorForm({...supervisorForm, room: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="Room S01">Room S01</option>
+                <option value="Room S02">Room S02</option>
+                <option value="Room S03">Room S03</option>
+                <option value="Room S04">Room S04</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="contact">Contact</Label>
+              <Input
+                id="contact"
+                value={supervisorForm.contact}
+                onChange={(e) => setSupervisorForm({...supervisorForm, contact: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={supervisorForm.email}
+                onChange={(e) => setSupervisorForm({...supervisorForm, email: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={supervisorForm.password}
+                onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+        );
+
+      case 'parent':
+        return (
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="student_id">Student</Label>
+              <select
+                id="student_id"
+                value={parentForm.student_id}
+                onChange={(e) => {
+                  const student = students.find(s => s.id === e.target.value);
+                  setParentForm({...parentForm, student_id: e.target.value, name: student?.name || ''});
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select Student</option>
+                {students.map((student) => (
+                  <option key={student.id} value={student.id}>
+                    {student.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={parentForm.name}
+                onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={parentForm.username}
+                onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="gender">Gender</Label>
+              <select
+                id="gender"
+                value={parentForm.gender}
+                onChange={(e) => setParentForm({...parentForm, gender: e.target.value as 'Male' | 'Female'})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+            </div>
+            <div>
+              <Label htmlFor="contact">Contact</Label>
+              <Input
+                id="contact"
+                value={parentForm.contact}
+                onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={parentForm.email}
+                onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={parentForm.password}
+                onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
+                required
+              />
+            </div>
+          </div>
+        );
+
+      case 'student':
+        return (
+          <div className="space-y-4 max-h-96 overflow-y-auto">
+            <div>
+              <Label htmlFor="name">Name</Label>
+              <Input
+                id="name"
+                value={studentForm.name}
+                onChange={(e) => setStudentForm({...studentForm, name: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="username">Username</Label>
+              <Input
+                id="username"
+                value={studentForm.username}
+                onChange={(e) => setStudentForm({...studentForm, username: e.target.value})}
+                required
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="age">Age</Label>
+                <Input
+                  id="age"
+                  type="number"
+                  value={studentForm.age}
+                  onChange={(e) => setStudentForm({...studentForm, age: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="grade_level">Grade Level</Label>
+                <select
+                  id="grade_level"
+                  value={studentForm.grade_level}
+                  onChange={(e) => setStudentForm({...studentForm, grade_level: e.target.value as any})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="Year 9">Year 9</option>
+                  <option value="Year 10">Year 10</option>
+                  <option value="Year 11">Year 11</option>
+                  <option value="Year 12">Year 12</option>
+                  <option value="Year 13">Year 13</option>
+                </select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="date_of_birth">Date of Birth</Label>
+              <Input
+                id="date_of_birth"
+                type="date"
+                value={studentForm.date_of_birth}
+                onChange={(e) => setStudentForm({...studentForm, date_of_birth: e.target.value})}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="stream">Stream</Label>
+                <select
+                  id="stream"
+                  value={studentForm.stream}
+                  onChange={(e) => setStudentForm({...studentForm, stream: e.target.value as any})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  <option value="A">A</option>
+                  <option value="B">B</option>
+                  <option value="C">C</option>
+                  <option value="D">D</option>
+                </select>
+              </div>
+              <div>
+                <Label htmlFor="room">Room</Label>
+                <select
+                  id="room"
+                  value={studentForm.room}
+                  onChange={(e) => setStudentForm({...studentForm, room: e.target.value})}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md"
+                >
+                  {['N103', 'N104', 'N105', 'N106', 'N107', 'N108', 'N109', 'N203', 'N204', 'N205', 'N206', 'N207', 'N208'].map(room => (
+                    <option key={room} value={room}>{room}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="shoe_rack_number">Shoe Rack Number</Label>
+              <Input
+                id="shoe_rack_number"
+                value={studentForm.shoe_rack_number}
+                onChange={(e) => setStudentForm({...studentForm, shoe_rack_number: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="home_address">Home Address</Label>
+              <Input
+                id="home_address"
+                value={studentForm.home_address}
+                onChange={(e) => setStudentForm({...studentForm, home_address: e.target.value})}
+              />
+            </div>
+            <div>
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                value={studentForm.email}
+                onChange={(e) => setStudentForm({...studentForm, email: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="password">Password</Label>
+              <Input
+                id="password"
+                type="password"
+                value={studentForm.password}
+                onChange={(e) => setStudentForm({...studentForm, password: e.target.value})}
+                required
+              />
+            </div>
+            <div>
+              <Label htmlFor="supervisor_id">Supervisor</Label>
+              <select
+                id="supervisor_id"
+                value={studentForm.supervisor_id}
+                onChange={(e) => setStudentForm({...studentForm, supervisor_id: e.target.value})}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="">Select Supervisor</option>
+                {supervisors.map((supervisor) => (
+                  <option key={supervisor.id} value={supervisor.id}>
+                    {supervisor.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="parent_name">Parent Name</Label>
+                <Input
+                  id="parent_name"
+                  value={studentForm.parent_name}
+                  onChange={(e) => setStudentForm({...studentForm, parent_name: e.target.value})}
+                />
+              </div>
+              <div>
+                <Label htmlFor="parent_contact">Parent Contact</Label>
+                <Input
+                  id="parent_contact"
+                  value={studentForm.parent_contact}
+                  onChange={(e) => setStudentForm({...studentForm, parent_contact: e.target.value})}
+                />
+              </div>
+            </div>
+          </div>
+        );
+    }
   };
 
   return (
@@ -107,59 +615,35 @@ const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
               <span>Add User</span>
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-2xl">
             <DialogHeader>
               <DialogTitle>Add New User</DialogTitle>
             </DialogHeader>
-            <form onSubmit={handleAddUser} className="space-y-4 mt-4">
-              <div>
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  value={newUser.username}
-                  onChange={(e) => setNewUser({...newUser, username: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={newUser.email}
-                  onChange={(e) => setNewUser({...newUser, email: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={newUser.password}
-                  onChange={(e) => setNewUser({...newUser, password: e.target.value})}
-                  required
-                />
-              </div>
-              <div>
-                <Label htmlFor="role">Role</Label>
-                <select
-                  id="role"
-                  value={newUser.role}
-                  onChange={(e) => setNewUser({...newUser, role: e.target.value as any})}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="admin">Admin</option>
-                  <option value="supervisor">Supervisor</option>
-                  <option value="parent">Parent</option>
-                  <option value="student">Student</option>
-                </select>
-              </div>
-              <div className="flex justify-end space-x-2">
+            
+            <div className="mb-4">
+              <Label htmlFor="userType">User Type</Label>
+              <select
+                id="userType"
+                value={selectedUserType}
+                onChange={(e) => setSelectedUserType(e.target.value as any)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-md"
+              >
+                <option value="admin">Admin</option>
+                <option value="supervisor">Supervisor</option>
+                <option value="parent">Parent</option>
+                <option value="student">Student</option>
+              </select>
+            </div>
+
+            <form onSubmit={handleAddUser}>
+              {renderUserForm()}
+              <div className="flex justify-end space-x-2 mt-6">
                 <Button type="button" variant="outline" onClick={() => setIsAddDialogOpen(false)}>
                   Cancel
                 </Button>
-                <Button type="submit">Add User</Button>
+                <Button type="submit" disabled={loading}>
+                  {loading ? 'Adding...' : `Add ${selectedUserType.charAt(0).toUpperCase() + selectedUserType.slice(1)}`}
+                </Button>
               </div>
             </form>
           </DialogContent>
@@ -182,7 +666,10 @@ const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
               <TableRow key={user.id}>
                 <TableCell className="flex items-center space-x-3">
                   {getRoleIcon(user.role)}
-                  <span className="font-medium">{user.username}</span>
+                  <div>
+                    <div className="font-medium">{user.name}</div>
+                    <div className="text-sm text-gray-500">@{user.username}</div>
+                  </div>
                 </TableCell>
                 <TableCell>{user.email}</TableCell>
                 <TableCell>
@@ -190,7 +677,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
                     {user.role.charAt(0).toUpperCase() + user.role.slice(1)}
                   </span>
                 </TableCell>
-                <TableCell>{user.createdAt}</TableCell>
+                <TableCell>{new Date(user.createdAt).toLocaleDateString()}</TableCell>
                 <TableCell>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
@@ -204,7 +691,7 @@ const UserManagement: React.FC<UserManagementProps> = ({ onUsersChange }) => {
                         Edit
                       </DropdownMenuItem>
                       <DropdownMenuItem
-                        onClick={() => handleDeleteUser(user.id)}
+                        onClick={() => handleDeleteUser(user.id, user.role)}
                         className="text-red-600"
                       >
                         <Trash2 className="w-4 h-4 mr-2" />
