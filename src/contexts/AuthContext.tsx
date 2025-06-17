@@ -37,7 +37,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const checkUser = () => {
       const savedUser = localStorage.getItem('dormhub_user');
       if (savedUser) {
-        setUser(JSON.parse(savedUser));
+        try {
+          setUser(JSON.parse(savedUser));
+        } catch (error) {
+          console.error('Error parsing saved user:', error);
+          localStorage.removeItem('dormhub_user');
+        }
       }
       setLoading(false);
     };
@@ -58,12 +63,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       ];
 
       for (const { table, role } of tables) {
+        console.log(`Checking ${table} for user: ${username}`);
+        
         const { data, error } = await supabase
           .from(table)
           .select('*')
           .eq('username', username)
           .eq('password', password)
           .single();
+
+        console.log(`Result for ${table}:`, { data, error });
 
         if (data && !error) {
           const newUser: User = {
@@ -77,13 +86,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           setUser(newUser);
           localStorage.setItem('dormhub_user', JSON.stringify(newUser));
           setLoading(false);
+          console.log('Login successful for:', newUser);
           return { success: true, user: newUser };
         }
       }
       
       setLoading(false);
+      console.log('Login failed: Invalid credentials');
       return { success: false, error: 'Invalid username or password' };
     } catch (error) {
+      console.error('Login error:', error);
       setLoading(false);
       return { success: false, error: 'Login failed. Please try again.' };
     }

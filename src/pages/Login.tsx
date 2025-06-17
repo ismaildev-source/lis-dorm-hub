@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Eye, EyeOff, LogIn, Home } from 'lucide-react';
@@ -14,17 +14,49 @@ const Login = () => {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   
-  const { login } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
+
+  // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated && user) {
+      console.log('User already authenticated, redirecting:', user);
+      switch (user.role) {
+        case 'admin':
+          navigate('/admin/dashboard');
+          break;
+        case 'supervisor':
+          navigate('/supervisor/dashboard');
+          break;
+        case 'parent':
+        case 'student':
+          navigate('/view/attendance');
+          break;
+        default:
+          navigate('/');
+      }
+    }
+  }, [isAuthenticated, user, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!username.trim() || !password.trim()) {
+      setError('Please enter both username and password');
+      return;
+    }
+
     setError('');
     setIsLoading(true);
 
+    console.log('Attempting login with:', { username, password: '***' });
+
     try {
       const result = await login(username, password);
+      console.log('Login result:', result);
+      
       if (result.success && result.user) {
+        console.log('Login successful, redirecting user:', result.user);
         // Redirect based on user role
         switch (result.user.role) {
           case 'admin':
@@ -42,8 +74,10 @@ const Login = () => {
         }
       } else {
         setError(result.error || 'Login failed');
+        console.log('Login failed:', result.error);
       }
     } catch (err) {
+      console.error('Login exception:', err);
       setError('Login failed. Please try again.');
     } finally {
       setIsLoading(false);
@@ -84,6 +118,7 @@ const Login = () => {
               placeholder="Enter your username"
               required
               className="mt-1"
+              disabled={isLoading}
             />
           </div>
 
@@ -98,11 +133,13 @@ const Login = () => {
                 placeholder="Enter your password"
                 required
                 className="pr-10"
+                disabled={isLoading}
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                disabled={isLoading}
               >
                 {showPassword ? (
                   <EyeOff className="h-4 w-4 text-gray-400" />
@@ -129,7 +166,9 @@ const Login = () => {
         </form>
 
         <div className="mt-6 text-center text-sm text-gray-600">
-          <p>Contact your administrator for login credentials</p>
+          <p>Demo credentials:</p>
+          <p>Admin - Username: <strong>admin</strong>, Password: <strong>admin123</strong></p>
+          <p>Contact your administrator for other login credentials</p>
         </div>
       </div>
     </div>
