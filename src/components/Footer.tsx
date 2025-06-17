@@ -14,13 +14,13 @@ const Footer = () => {
               The leading dormitory management platform for modern educational institutions.
             </p>
             <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+              <a href="https://web.facebook.com/photo/?fbid=237439805562479&set=a.237439782229148&__tn__=%3C" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Facebook size={20} />
               </a>
               <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Twitter size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+              <a href="https://www.instagram.com/lis.nairobi/" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Instagram size={20} />
               </a>
               <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
@@ -36,7 +36,7 @@ const Footer = () => {
               <li><a href="#about" className="text-gray-300 hover:text-white transition-colors">About Us</a></li>
               <li><a href="#features" className="text-gray-300 hover:text-white transition-colors">Features</a></li>
               <li><a href="#contact" className="text-gray-300 hover:text-white transition-colors">Contact</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Pricing</a></li>
+              <li><a href="https://lis.sc.ke/wp-content/uploads/2024/09/LIS-Karen-2024-2025-Fees-Structure.pdf" className="text-gray-300 hover:text-white transition-colors">Pricing</a></li>
             </ul>
           </div>
 
@@ -44,10 +44,8 @@ const Footer = () => {
           <div>
             <h4 className="text-lg font-semibold mb-4">Services</h4>
             <ul className="space-y-2">
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Room Management</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Student Portal</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Security System</a></li>
-              <li><a href="#" className="text-gray-300 hover:text-white transition-colors">Analytics</a></li>
+              <li><a href="https://lis.sc.ke" className="text-gray-300 hover:text-white transition-colors">School Website</a></li>
+              <li><a href="https://lgs.sis.cool/UI/" className="text-gray-300 hover:text-white transition-colors">Student Portal</a></li>
             </ul>
           </div>
 
@@ -57,17 +55,19 @@ const Footer = () => {
             <div className="space-y-2 text-gray-300">
               <div className="flex items-center space-x-2">
                 <Mail size={16} />
-                <span>support@dormhub.com</span>
+                <span>support@lis.sc.ke</span>
               </div>
-              <p>123 Education Street</p>
-              <p>Campus City, CC 12345</p>
-              <p>+1 (555) 123-4567</p>
+              <p>LIGHT INTERNATIONAL SCHOOL
+              <p>P.O. BOX 1799-00502</p>
+              <p>KAREN NAIROBI KENYA</p>
+              <p>Tel:+254 703 200 002</p>
+              <p>E-mail: info@lis.sc.ke</p>
             </div>
           </div>
         </div>
 
         <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 DormHub. All rights reserved.</p>
+          <p>&copy; 2024 Developer Mr.Ismail. All rights reserved.</p>
         </div>
       </div>
     </footer>
