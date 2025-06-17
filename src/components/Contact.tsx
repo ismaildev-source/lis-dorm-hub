@@ -50,8 +50,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Email</h4>
-                    <p className="text-gray-600">support@dormhub.com</p>
-                    <p className="text-gray-600">info@dormhub.com</p>
+                    <p className="text-gray-600">support@lis.sc.ke</p>
+                    <p className="text-gray-600">info@lis.sc.ke</p>
                   </div>
                 </div>
 
@@ -61,8 +61,8 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Phone</h4>
-                    <p className="text-gray-600">+1 (555) 123-4567</p>
-                    <p className="text-gray-600">+1 (555) 123-4568</p>
+                    <p className="text-gray-600">+254 790 123-4567</p>
+                    <p className="text-gray-600">+254 790 123-568</p>
                   </div>
                 </div>
 
@@ -72,8 +72,9 @@ const Contact = () => {
                   </div>
                   <div>
                     <h4 className="font-semibold text-gray-900">Address</h4>
-                    <p className="text-gray-600">123 Education Street</p>
-                    <p className="text-gray-600">Campus City, CC 12345</p>
+                    <p className="text-gray-600">LIGHT INTERNATIONAL SCHOOL</p>
+                    <p className="text-gray-600">KAREN NAIROBI KENYA</p>
+                    <p className="text-gray-600">P.O BOX 1799-00502</p>
                   </div>
                 </div>
               </div>
@@ -84,11 +85,11 @@ const Contact = () => {
               <div className="space-y-2 text-sm text-gray-600">
                 <div className="flex justify-between">
                   <span>Monday - Friday</span>
-                  <span>9:00 AM - 6:00 PM</span>
+                  <span>7:00 AM - 5:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Saturday</span>
-                  <span>10:00 AM - 4:00 PM</span>
+                  <span>9:00 AM - 2:00 PM</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Sunday</span>
