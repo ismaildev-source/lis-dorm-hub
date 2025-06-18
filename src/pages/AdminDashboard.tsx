@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Users, UserPlus, Shield, GraduationCap, User, Calendar, Download, Eye, Printer } from 'lucide-react';
@@ -88,6 +89,12 @@ const AdminDashboard = () => {
       console.error('Error fetching attendance records:', error);
     }
   };
+
+  useEffect(() => {
+    fetchUserCounts();
+    fetchSupervisors();
+    fetchAttendanceRecords();
+  }, []);
 
   const exportAttendanceToCSV = () => {
     const headers = ['Date', 'Student', 'Status', 'Study Type', 'Grade', 'Supervisor', 'Absent Reason', 'Late', 'Noise', 'Left Early', 'Inactive', 'Comments'];
@@ -261,26 +268,32 @@ const AdminDashboard = () => {
                 <CardTitle>Supervisors and Their Students</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {supervisors.map((supervisor) => (
-                    <Card key={supervisor.id} className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <h4 className="font-medium">{supervisor.name}</h4>
-                          <p className="text-sm text-gray-500">{supervisor.email}</p>
+                {supervisors.length === 0 ? (
+                  <div className="text-center py-8">
+                    <p className="text-gray-500">No supervisors found.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {supervisors.map((supervisor) => (
+                      <Card key={supervisor.id} className="p-4">
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <h4 className="font-medium">{supervisor.name}</h4>
+                            <p className="text-sm text-gray-500">{supervisor.email}</p>
+                          </div>
+                          <Button
+                            onClick={() => setSelectedSupervisor(supervisor)}
+                            variant="outline"
+                            size="sm"
+                          >
+                            <Eye className="w-4 h-4 mr-2" />
+                            View Students
+                          </Button>
                         </div>
-                        <Button
-                          onClick={() => setSelectedSupervisor(supervisor)}
-                          variant="outline"
-                          size="sm"
-                        >
-                          <Eye className="w-4 h-4 mr-2" />
-                          View Students
-                        </Button>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
               </CardContent>
             </Card>
           </div>
@@ -362,7 +375,7 @@ const AdminDashboard = () => {
               </div>
             </CardHeader>
             <CardContent>
-              <div id="attendance-table">
+              <div id="attendance-table" className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
@@ -373,7 +386,7 @@ const AdminDashboard = () => {
                       <TableHead>Grade</TableHead>
                       <TableHead>Supervisor</TableHead>
                       <TableHead>Behavioral Issues</TableHead>
-                      <TableHead>Comments</TableHead>
+                      <TableHead className="min-w-[200px]">Comments</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
@@ -402,8 +415,8 @@ const AdminDashboard = () => {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="max-w-32 truncate" title={record.comments}>
-                            {record.comments}
+                          <div className="max-w-xs break-words" title={record.comments}>
+                            {record.comments || 'No comments'}
                           </div>
                         </TableCell>
                       </TableRow>

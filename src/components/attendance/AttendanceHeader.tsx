@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { LogOut, Eye } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { Button } from '../ui/button';
 
 interface AttendanceHeaderProps {

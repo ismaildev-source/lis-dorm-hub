@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Calendar, Users, Eye } from 'lucide-react';
@@ -13,6 +14,7 @@ import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
 import LogoutConfirmation from '../components/LogoutConfirmation';
+import StudentProfileModal from '../components/StudentProfileModal';
 
 type AttendanceStatus = 'Present' | 'Absent';
 type StudyType = 'Prep1 19:10-20:00' | 'Prep2 21:10-22:00' | 'Saturday Study Time' | 'Sunday Study Time' | 'Extra/Special Study Time';
@@ -22,6 +24,16 @@ interface Student {
   id: string;
   name: string;
   grade_level: GradeLevelType;
+  email: string;
+  username: string;
+  stream: string;
+  room: string;
+  age?: number;
+  date_of_birth?: string;
+  home_address?: string;
+  parent_name?: string;
+  parent_contact?: string;
+  shoe_rack_number?: string;
 }
 
 interface AttendanceRecord {
@@ -47,6 +59,8 @@ const SupervisorDashboard = () => {
   const [loading, setLoading] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState('attendance');
+  const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
+  const [showStudentProfile, setShowStudentProfile] = useState(false);
 
   // Form state
   const [attendanceForm, setAttendanceForm] = useState({
@@ -83,7 +97,7 @@ const SupervisorDashboard = () => {
       // Only fetch students assigned to this supervisor
       const { data, error } = await supabase
         .from('student_users')
-        .select('id, name, grade_level')
+        .select('*')
         .eq('supervisor_id', user?.id);
       
       if (error) throw error;
@@ -165,6 +179,11 @@ const SupervisorDashboard = () => {
       });
     }
     setLoading(false);
+  };
+
+  const handleViewProfile = (student: Student) => {
+    setSelectedStudent(student);
+    setShowStudentProfile(true);
   };
 
   return (
@@ -373,24 +392,24 @@ const SupervisorDashboard = () => {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="overflow-x-auto">
+                <div className="overflow-x-auto max-h-96 overflow-y-auto">
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>Student</TableHead>
-                        <TableHead>Status</TableHead>
-                        <TableHead>Date</TableHead>
-                        <TableHead>Study Type</TableHead>
-                        <TableHead>Behavioral Notes</TableHead>
-                        <TableHead>Comments</TableHead>
+                        <TableHead className="min-w-[120px]">Student</TableHead>
+                        <TableHead className="min-w-[80px]">Status</TableHead>
+                        <TableHead className="min-w-[100px]">Date</TableHead>
+                        <TableHead className="min-w-[150px]">Study Type</TableHead>
+                        <TableHead className="min-w-[120px]">Behavioral</TableHead>
+                        <TableHead className="min-w-[200px]">Comments</TableHead>
                       </TableRow>
                     </TableHeader>
                     <TableBody>
                       {attendanceRecords.slice(0, 10).map((record: any) => (
                         <TableRow key={record.id}>
-                          <TableCell>{record.student_users?.name}</TableCell>
+                          <TableCell className="font-medium">{record.student_users?.name}</TableCell>
                           <TableCell>
-                            <span className={`px-2 py-1 rounded-full text-xs ${
+                            <span className={`px-2 py-1 rounded-full text-xs whitespace-nowrap ${
                               record.attendance_status === 'Present' 
                                 ? 'bg-green-100 text-green-800' 
                                 : 'bg-red-100 text-red-800'
@@ -398,19 +417,19 @@ const SupervisorDashboard = () => {
                               {record.attendance_status}
                             </span>
                           </TableCell>
-                          <TableCell>{record.date}</TableCell>
-                          <TableCell>{record.study_type}</TableCell>
+                          <TableCell className="whitespace-nowrap">{record.date}</TableCell>
+                          <TableCell className="whitespace-nowrap">{record.study_type}</TableCell>
                           <TableCell>
                             <div className="flex flex-wrap gap-1">
-                              {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Late</span>}
-                              {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Noise</span>}
-                              {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Left Early</span>}
-                              {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Inactive</span>}
+                              {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded whitespace-nowrap">Late</span>}
+                              {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded whitespace-nowrap">Noise</span>}
+                              {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded whitespace-nowrap">Left Early</span>}
+                              {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded whitespace-nowrap">Inactive</span>}
                             </div>
                           </TableCell>
                           <TableCell>
-                            <div className="max-w-32 truncate" title={record.comments}>
-                              {record.comments}
+                            <div className="max-w-xs break-words" title={record.comments}>
+                              {record.comments || 'No comments'}
                             </div>
                           </TableCell>
                         </TableRow>
@@ -448,6 +467,8 @@ const SupervisorDashboard = () => {
                       <TableRow>
                         <TableHead>Name</TableHead>
                         <TableHead>Grade</TableHead>
+                        <TableHead>Stream</TableHead>
+                        <TableHead>Room</TableHead>
                         <TableHead>Actions</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -456,8 +477,14 @@ const SupervisorDashboard = () => {
                         <TableRow key={student.id}>
                           <TableCell className="font-medium">{student.name}</TableCell>
                           <TableCell>{student.grade_level}</TableCell>
+                          <TableCell>{student.stream}</TableCell>
+                          <TableCell>{student.room}</TableCell>
                           <TableCell>
-                            <Button variant="outline" size="sm">
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleViewProfile(student)}
+                            >
                               <Eye className="w-4 h-4 mr-2" />
                               View Profile
                             </Button>
@@ -477,6 +504,15 @@ const SupervisorDashboard = () => {
         isOpen={showLogoutConfirm}
         onClose={() => setShowLogoutConfirm(false)}
         onConfirm={confirmLogout}
+      />
+
+      <StudentProfileModal
+        student={selectedStudent}
+        isOpen={showStudentProfile}
+        onClose={() => {
+          setShowStudentProfile(false);
+          setSelectedStudent(null);
+        }}
       />
     </div>
   );
