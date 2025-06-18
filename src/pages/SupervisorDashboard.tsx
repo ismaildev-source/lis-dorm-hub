@@ -1,7 +1,6 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, Calendar, Users } from 'lucide-react';
+import { LogOut, Calendar, Users, Eye } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -13,6 +12,7 @@ import { Checkbox } from '../components/ui/checkbox';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/components/ui/use-toast';
+import LogoutConfirmation from '../components/LogoutConfirmation';
 
 type AttendanceStatus = 'Present' | 'Absent';
 type StudyType = 'Prep1 19:10-20:00' | 'Prep2 21:10-22:00' | 'Saturday Study Time' | 'Sunday Study Time' | 'Extra/Special Study Time';
@@ -45,6 +45,8 @@ const SupervisorDashboard = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [attendanceRecords, setAttendanceRecords] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [activeTab, setActiveTab] = useState('attendance');
 
   // Form state
   const [attendanceForm, setAttendanceForm] = useState({
@@ -62,8 +64,13 @@ const SupervisorDashboard = () => {
   });
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     logout();
     navigate('/');
+    setShowLogoutConfirm(false);
   };
 
   useEffect(() => {
@@ -73,9 +80,11 @@ const SupervisorDashboard = () => {
 
   const fetchStudents = async () => {
     try {
+      // Only fetch students assigned to this supervisor
       const { data, error } = await supabase
         .from('student_users')
-        .select('id, name, grade_level');
+        .select('id, name, grade_level')
+        .eq('supervisor_id', user?.id);
       
       if (error) throw error;
       setStudents(data || []);
@@ -184,206 +193,291 @@ const SupervisorDashboard = () => {
       </header>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Attendance Form */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Calendar className="w-5 h-5" />
-                <span>Take Attendance</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div>
-                <Label htmlFor="student">Student</Label>
-                <Select value={attendanceForm.student_id} onValueChange={handleStudentChange}>
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a student" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {students.map(student => (
-                      <SelectItem key={student.id} value={student.id}>
-                        {student.name} ({student.grade_level})
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
+        {/* Navigation Tabs */}
+        <div className="border-b border-gray-200 mb-8">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('attendance')}
+              className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'attendance'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Calendar size={20} />
+              <span>Take Attendance</span>
+            </button>
+            <button
+              onClick={() => setActiveTab('students')}
+              className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'students'
+                  ? 'border-blue-500 text-blue-600'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              <Users size={20} />
+              <span>My Students ({students.length})</span>
+            </button>
+          </nav>
+        </div>
 
-              <div>
-                <Label htmlFor="attendance-status">Attendance Status</Label>
-                <Select 
-                  value={attendanceForm.attendance_status} 
-                  onValueChange={(value: AttendanceStatus) => setAttendanceForm({...attendanceForm, attendance_status: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Present">Present</SelectItem>
-                    <SelectItem value="Absent">Absent</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div>
-                <Label htmlFor="date">Date</Label>
-                <Input
-                  id="date"
-                  type="date"
-                  value={attendanceForm.date}
-                  onChange={(e) => setAttendanceForm({...attendanceForm, date: e.target.value})}
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="study-type">Study Type</Label>
-                <Select 
-                  value={attendanceForm.study_type} 
-                  onValueChange={(value: StudyType) => setAttendanceForm({...attendanceForm, study_type: value})}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Prep1 19:10-20:00">Prep1 19:10-20:00</SelectItem>
-                    <SelectItem value="Prep2 21:10-22:00">Prep2 21:10-22:00</SelectItem>
-                    <SelectItem value="Saturday Study Time">Saturday Study Time</SelectItem>
-                    <SelectItem value="Sunday Study Time">Sunday Study Time</SelectItem>
-                    <SelectItem value="Extra/Special Study Time">Extra/Special Study Time</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {attendanceForm.attendance_status === 'Absent' && (
+        {activeTab === 'attendance' && (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {/* Attendance Form */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Calendar className="w-5 h-5" />
+                  <span>Take Attendance</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div>
-                  <Label htmlFor="absent-reason">Absent Reason</Label>
+                  <Label htmlFor="student">Student</Label>
+                  <Select value={attendanceForm.student_id} onValueChange={handleStudentChange}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a student" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {students.map(student => (
+                        <SelectItem key={student.id} value={student.id}>
+                          {student.name} ({student.grade_level})
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="attendance-status">Attendance Status</Label>
+                  <Select 
+                    value={attendanceForm.attendance_status} 
+                    onValueChange={(value: AttendanceStatus) => setAttendanceForm({...attendanceForm, attendance_status: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Present">Present</SelectItem>
+                      <SelectItem value="Absent">Absent</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="date">Date</Label>
                   <Input
-                    id="absent-reason"
-                    value={attendanceForm.absent_reason}
-                    onChange={(e) => setAttendanceForm({...attendanceForm, absent_reason: e.target.value})}
-                    placeholder="Enter reason for absence"
+                    id="date"
+                    type="date"
+                    value={attendanceForm.date}
+                    onChange={(e) => setAttendanceForm({...attendanceForm, date: e.target.value})}
                   />
                 </div>
-              )}
 
-              <div className="space-y-2">
-                <Label>Behavioral Notes</Label>
+                <div>
+                  <Label htmlFor="study-type">Study Type</Label>
+                  <Select 
+                    value={attendanceForm.study_type} 
+                    onValueChange={(value: StudyType) => setAttendanceForm({...attendanceForm, study_type: value})}
+                  >
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Prep1 19:10-20:00">Prep1 19:10-20:00</SelectItem>
+                      <SelectItem value="Prep2 21:10-22:00">Prep2 21:10-22:00</SelectItem>
+                      <SelectItem value="Saturday Study Time">Saturday Study Time</SelectItem>
+                      <SelectItem value="Sunday Study Time">Sunday Study Time</SelectItem>
+                      <SelectItem value="Extra/Special Study Time">Extra/Special Study Time</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {attendanceForm.attendance_status === 'Absent' && (
+                  <div>
+                    <Label htmlFor="absent-reason">Absent Reason</Label>
+                    <Input
+                      id="absent-reason"
+                      value={attendanceForm.absent_reason}
+                      onChange={(e) => setAttendanceForm({...attendanceForm, absent_reason: e.target.value})}
+                      placeholder="Enter reason for absence"
+                    />
+                  </div>
+                )}
+
                 <div className="space-y-2">
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="late"
-                      checked={attendanceForm.is_late}
-                      onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_late: !!checked})}
-                    />
-                    <Label htmlFor="late">Late</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="noise"
-                      checked={attendanceForm.is_noise}
-                      onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_noise: !!checked})}
-                    />
-                    <Label htmlFor="noise">Noise</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="leave-early"
-                      checked={attendanceForm.is_leave_early}
-                      onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_leave_early: !!checked})}
-                    />
-                    <Label htmlFor="leave-early">Leave Early</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                    <Checkbox
-                      id="doing-nothing"
-                      checked={attendanceForm.is_doing_nothing}
-                      onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_doing_nothing: !!checked})}
-                    />
-                    <Label htmlFor="doing-nothing">Doing Nothing</Label>
+                  <Label>Behavioral Notes</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="late"
+                        checked={attendanceForm.is_late}
+                        onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_late: !!checked})}
+                      />
+                      <Label htmlFor="late">Late</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="noise"
+                        checked={attendanceForm.is_noise}
+                        onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_noise: !!checked})}
+                      />
+                      <Label htmlFor="noise">Noise</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="leave-early"
+                        checked={attendanceForm.is_leave_early}
+                        onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_leave_early: !!checked})}
+                      />
+                      <Label htmlFor="leave-early">Leave Early</Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <Checkbox
+                        id="doing-nothing"
+                        checked={attendanceForm.is_doing_nothing}
+                        onCheckedChange={(checked) => setAttendanceForm({...attendanceForm, is_doing_nothing: !!checked})}
+                      />
+                      <Label htmlFor="doing-nothing">Doing Nothing</Label>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <Label htmlFor="comments">Comments</Label>
-                <Textarea
-                  id="comments"
-                  value={attendanceForm.comments}
-                  onChange={(e) => setAttendanceForm({...attendanceForm, comments: e.target.value})}
-                  placeholder="Enter any additional comments..."
-                  rows={3}
-                />
-              </div>
+                <div>
+                  <Label htmlFor="comments">Comments</Label>
+                  <Textarea
+                    id="comments"
+                    value={attendanceForm.comments}
+                    onChange={(e) => setAttendanceForm({...attendanceForm, comments: e.target.value})}
+                    placeholder="Enter any additional comments..."
+                    rows={3}
+                  />
+                </div>
 
-              <Button 
-                onClick={handleSubmitAttendance} 
-                className="w-full"
-                disabled={loading || !attendanceForm.student_id}
-              >
-                Submit Attendance
-              </Button>
-            </CardContent>
-          </Card>
+                <Button 
+                  onClick={handleSubmitAttendance} 
+                  className="w-full"
+                  disabled={loading || !attendanceForm.student_id}
+                >
+                  Submit Attendance
+                </Button>
+              </CardContent>
+            </Card>
 
-          {/* Recent Attendance Records */}
+            {/* Recent Attendance Records */}
+            <Card>
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>Recent Attendance Records</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Student</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Date</TableHead>
+                        <TableHead>Study Type</TableHead>
+                        <TableHead>Behavioral Notes</TableHead>
+                        <TableHead>Comments</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {attendanceRecords.slice(0, 10).map((record: any) => (
+                        <TableRow key={record.id}>
+                          <TableCell>{record.student_users?.name}</TableCell>
+                          <TableCell>
+                            <span className={`px-2 py-1 rounded-full text-xs ${
+                              record.attendance_status === 'Present' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {record.attendance_status}
+                            </span>
+                          </TableCell>
+                          <TableCell>{record.date}</TableCell>
+                          <TableCell>{record.study_type}</TableCell>
+                          <TableCell>
+                            <div className="flex flex-wrap gap-1">
+                              {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Late</span>}
+                              {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Noise</span>}
+                              {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Left Early</span>}
+                              {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Inactive</span>}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="max-w-32 truncate" title={record.comments}>
+                              {record.comments}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'students' && (
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Users className="w-5 h-5" />
-                <span>Recent Attendance Records</span>
+              <CardTitle className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <Users className="w-5 h-5" />
+                  <span>Students Under My Supervision</span>
+                </div>
+                <div className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
+                  Total: {students.length}
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Study Type</TableHead>
-                      <TableHead>Behavioral Notes</TableHead>
-                      <TableHead>Comments</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {attendanceRecords.slice(0, 10).map((record: any) => (
-                      <TableRow key={record.id}>
-                        <TableCell>{record.student_users?.name}</TableCell>
-                        <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
-                            record.attendance_status === 'Present' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {record.attendance_status}
-                          </span>
-                        </TableCell>
-                        <TableCell>{record.date}</TableCell>
-                        <TableCell>{record.study_type}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Late</span>}
-                            {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Noise</span>}
-                            {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Left Early</span>}
-                            {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Inactive</span>}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-32 truncate" title={record.comments}>
-                            {record.comments}
-                          </div>
-                        </TableCell>
+              {students.length === 0 ? (
+                <div className="p-6 text-center">
+                  <p className="text-gray-500">No students assigned to you yet.</p>
+                </div>
+              ) : (
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Grade</TableHead>
+                        <TableHead>Actions</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {students.map((student) => (
+                        <TableRow key={student.id}>
+                          <TableCell className="font-medium">{student.name}</TableCell>
+                          <TableCell>{student.grade_level}</TableCell>
+                          <TableCell>
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Profile
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </CardContent>
           </Card>
-        </div>
+        )}
       </div>
+
+      <LogoutConfirmation
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={confirmLogout}
+      />
     </div>
   );
 };

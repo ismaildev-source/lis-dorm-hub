@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Eye } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
+import LogoutConfirmation from '../components/LogoutConfirmation';
 import {
   Table,
   TableBody,
@@ -39,6 +39,7 @@ const AttendanceView = () => {
   const navigate = useNavigate();
   const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   useEffect(() => {
     fetchAttendanceRecords();
@@ -85,8 +86,13 @@ const AttendanceView = () => {
   };
 
   const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
     logout();
     navigate('/');
+    setShowLogoutConfirm(false);
   };
 
   const getStatusColor = (status: string) => {
@@ -201,6 +207,12 @@ const AttendanceView = () => {
           )}
         </div>
       </div>
+
+      <LogoutConfirmation
+        isOpen={showLogoutConfirm}
+        onClose={() => setShowLogoutConfirm(false)}
+        onConfirm={confirmLogout}
+      />
     </div>
   );
 };

@@ -46,6 +46,7 @@ export type Database = {
         Row: {
           absent_reason: string | null
           attendance_status: Database["public"]["Enums"]["attendance_status"]
+          comments: string | null
           created_at: string | null
           date: string
           grade_level: Database["public"]["Enums"]["grade_level"]
@@ -62,6 +63,7 @@ export type Database = {
         Insert: {
           absent_reason?: string | null
           attendance_status: Database["public"]["Enums"]["attendance_status"]
+          comments?: string | null
           created_at?: string | null
           date: string
           grade_level: Database["public"]["Enums"]["grade_level"]
@@ -78,6 +80,7 @@ export type Database = {
         Update: {
           absent_reason?: string | null
           attendance_status?: Database["public"]["Enums"]["attendance_status"]
+          comments?: string | null
           created_at?: string | null
           date?: string
           grade_level?: Database["public"]["Enums"]["grade_level"]
