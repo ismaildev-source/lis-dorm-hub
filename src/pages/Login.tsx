@@ -18,13 +18,13 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Redirect based on user role
+      // Redirect based on user role to correct routes that exist in App.tsx
       switch (user.role) {
         case 'admin':
-          navigate('/admin');
+          navigate('/admin/dashboard');
           break;
         case 'supervisor':
-          navigate('/supervisor');
+          navigate('/supervisor/dashboard');
           break;
         case 'parent':
         case 'student':
