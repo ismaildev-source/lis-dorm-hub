@@ -57,7 +57,7 @@ const Footer = () => {
                 <Mail size={16} />
                 <span>support@lis.sc.ke</span>
               </div>
-              <p>LIGHT INTERNATIONAL SCHOOL
+              <p>LIGHT INTERNATIONAL SCHOOL</p>
               <p>P.O. BOX 1799-00502</p>
               <p>KAREN NAIROBI KENYA</p>
               <p>Tel:+254 703 200 002</p>
