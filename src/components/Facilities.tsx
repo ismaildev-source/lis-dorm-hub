@@ -1,6 +1,5 @@
-
 import React from 'react';
-import { Bed, PenTool, Gamepad2, Users, Monitor, Shirt, Shower, Droplets } from 'lucide-react';
+import { Bed, PenTool, Gamepad2, Users, Monitor, Shirt, Bath, Droplets } from 'lucide-react';
 
 const Facilities = () => {
   const facilities = [
@@ -41,7 +40,7 @@ const Facilities = () => {
       gradient: 'from-red-500 to-blue-500'
     },
     {
-      icon: Shower,
+      icon: Bath,
       title: 'Clean Washrooms',
       description: 'Maintained to high hygiene standards for comfort and cleanliness.',
       gradient: 'from-red-500 to-blue-500'
