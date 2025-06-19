@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Users, UserPlus, Shield, GraduationCap, User, Calendar, Download, Eye, Printer } from 'lucide-react';
@@ -125,23 +124,48 @@ const AdminDashboard = () => {
     window.URL.revokeObjectURL(url);
   };
 
-  const printTable = (tableId: string) => {
+  const printTable = (tableId: string, title: string) => {
     const printWindow = window.open('', '_blank');
     const table = document.getElementById(tableId);
     if (table && printWindow) {
+      // Clone the table and remove action buttons
+      const clonedTable = table.cloneNode(true) as HTMLElement;
+      
+      // Remove action columns and buttons
+      const actionHeaders = clonedTable.querySelectorAll('th:last-child');
+      actionHeaders.forEach(header => {
+        if (header.textContent?.toLowerCase().includes('action')) {
+          header.remove();
+        }
+      });
+      
+      const actionCells = clonedTable.querySelectorAll('td:last-child');
+      actionCells.forEach(cell => {
+        if (cell.querySelector('button')) {
+          cell.remove();
+        }
+      });
+
+      // Remove any buttons from the cloned table
+      const buttons = clonedTable.querySelectorAll('button');
+      buttons.forEach(button => button.remove());
+
       printWindow.document.write(`
         <html>
           <head>
-            <title>Print Table</title>
+            <title>Print ${title}</title>
             <style>
-              body { font-family: Arial, sans-serif; }
-              table { border-collapse: collapse; width: 100%; }
+              body { font-family: Arial, sans-serif; margin: 20px; }
+              h1 { color: #1e40af; margin-bottom: 20px; }
+              table { border-collapse: collapse; width: 100%; margin-top: 20px; }
               th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-              th { background-color: #f2f2f2; }
+              th { background-color: #f2f2f2; font-weight: bold; }
+              @media print { body { margin: 0; } }
             </style>
           </head>
           <body>
-            ${table.outerHTML}
+            <h1>${title}</h1>
+            ${clonedTable.outerHTML}
           </body>
         </html>
       `);
@@ -166,7 +190,7 @@ const AdminDashboard = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">DormHub Admin</h1>
+              <h1 className="text-2xl font-bold text-blue-600">LIS Dorm Karen Admin</h1>
             </div>
             <div className="flex items-center space-x-4">
               <span className="text-gray-700">Welcome, {user?.name}</span>
@@ -303,7 +327,7 @@ const AdminDashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Admin Users</h2>
-              <Button onClick={() => printTable('admin-table')} variant="outline" size="sm">
+              <Button onClick={() => printTable('admin-table', 'Admin Users')} variant="outline" size="sm">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -318,7 +342,7 @@ const AdminDashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Supervisors</h2>
-              <Button onClick={() => printTable('supervisor-table')} variant="outline" size="sm">
+              <Button onClick={() => printTable('supervisor-table', 'Supervisor Users')} variant="outline" size="sm">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -333,7 +357,7 @@ const AdminDashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Students</h2>
-              <Button onClick={() => printTable('student-table')} variant="outline" size="sm">
+              <Button onClick={() => printTable('student-table', 'Student Users')} variant="outline" size="sm">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -348,7 +372,7 @@ const AdminDashboard = () => {
           <div>
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-bold">Parents</h2>
-              <Button onClick={() => printTable('parent-table')} variant="outline" size="sm">
+              <Button onClick={() => printTable('parent-table', 'Parent Users')} variant="outline" size="sm">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -364,7 +388,7 @@ const AdminDashboard = () => {
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle>All Attendance Records</CardTitle>
               <div className="flex gap-2">
-                <Button onClick={() => printTable('attendance-table')} variant="outline" size="sm">
+                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm">
                   <Printer className="w-4 h-4 mr-2" />
                   Print
                 </Button>

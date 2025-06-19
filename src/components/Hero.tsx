@@ -9,7 +9,7 @@ const Hero = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
             <h1 className="text-4xl md:text-6xl font-bold text-gray-900 mb-6">
-              Welcome to <span className="text-blue-600">DormHub</span>
+              Welcome to <span className="text-blue-600">LIS Dorm Karen</span>
             </h1>
             <p className="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
               A comprehensive dormitory management system that streamlines student life, 

@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { ChevronDown, User, Shield, Users, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -23,12 +22,13 @@ const Navigation = () => {
   };
 
   return (
-    <nav className="bg-white shadow-lg fixed w-full top-0 z-50">
+    <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm z-50 border-b border-gray-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <div className="flex-shrink-0">
-            <h1 className="text-2xl font-bold text-blue-600">DormHub</h1>
+          <div className="flex items-center">
+            <div className="flex-shrink-0">
+              <h1 className="text-2xl font-bold text-blue-600">LIS Dorm Karen</h1>
+            </div>
           </div>
 
           {/* Navigation Links */}

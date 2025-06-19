@@ -33,7 +33,7 @@ const Contact = () => {
             Get in Touch
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Have questions about DormHub? We'd love to hear from you. 
+            Have questions about LIS Dorm Karen? We'd love to hear from you. 
             Send us a message and we'll respond as soon as possible.
           </p>
         </div>

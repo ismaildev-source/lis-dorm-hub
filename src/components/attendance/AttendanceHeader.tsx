@@ -16,7 +16,7 @@ const AttendanceHeader = ({ userRole, userName, onLogout }: AttendanceHeaderProp
         <div className="flex justify-between items-center h-16">
           <div className="flex items-center space-x-4">
             <h1 className="text-2xl font-bold text-purple-600">
-              DormHub {userRole === 'parent' ? 'Parent' : 'Student'} Portal
+              LIS Dorm Karen {userRole === 'parent' ? 'Parent' : 'Student'} Portal
             </h1>
           </div>
           <div className="flex items-center space-x-4">

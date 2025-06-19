@@ -1,9 +1,10 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Eye, EyeOff } from 'lucide-react';
 
 type GenderType = 'Male' | 'Female';
 
@@ -28,6 +29,8 @@ const AdminUserForm: React.FC<AdminUserFormProps> = ({
   onSubmit,
   isEditing = false
 }) => {
+  const [showPassword, setShowPassword] = useState(false);
+
   return (
     <div className="space-y-4">
       <div>
@@ -69,12 +72,22 @@ const AdminUserForm: React.FC<AdminUserFormProps> = ({
       </div>
       <div>
         <Label htmlFor="admin-password">Password</Label>
-        <Input
-          id="admin-password"
-          type="password"
-          value={formData.password}
-          onChange={(e) => onFormChange('password', e.target.value)}
-        />
+        <div className="relative">
+          <Input
+            id="admin-password"
+            type={showPassword ? "text" : "password"}
+            value={formData.password}
+            onChange={(e) => onFormChange('password', e.target.value)}
+            className="pr-10"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword(!showPassword)}
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+          >
+            {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+          </button>
+        </div>
       </div>
       <Button onClick={onSubmit} className="w-full">
         {isEditing ? 'Update Admin User' : 'Add Admin'}
