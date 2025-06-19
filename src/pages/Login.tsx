@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -61,6 +60,10 @@ const Login = () => {
     setLoading(false);
   };
 
+  const handleCancel = () => {
+    navigate('/');
+  };
+
   return (
     <div 
       className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
@@ -108,13 +111,23 @@ const Login = () => {
               <div className="text-red-600 text-sm text-center">{error}</div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
-              {loading ? 'Logging in...' : 'Login'}
-            </Button>
+            <div className="flex space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1"
+                disabled={loading}
+              >
+                {loading ? 'Logging in...' : 'Login'}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

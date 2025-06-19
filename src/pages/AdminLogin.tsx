@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../components/ui/button';
@@ -26,6 +25,10 @@ const AdminLogin = () => {
     }
     
     setLoading(false);
+  };
+
+  const handleCancel = () => {
+    navigate('/');
   };
 
   return (
@@ -75,13 +78,23 @@ const AdminLogin = () => {
               <div className="text-red-600 text-sm text-center">{error}</div>
             )}
 
-            <Button
-              type="submit"
-              className="w-full bg-red-600 hover:bg-red-700"
-              disabled={loading}
-            >
-              {loading ? 'Logging in...' : 'Login as Admin'}
-            </Button>
+            <div className="flex space-x-3">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1"
+                onClick={handleCancel}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                className="flex-1 bg-red-600 hover:bg-red-700"
+                disabled={loading}
+              >
+                {loading ? 'Logging in...' : 'Login as Admin'}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>
