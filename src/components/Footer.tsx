@@ -9,21 +9,18 @@ const Footer = () => {
         <div className="grid md:grid-cols-4 gap-8">
           {/* Company Info */}
           <div className="space-y-4">
-            <h3 className="text-2xl font-bold text-blue-400">DormHub</h3>
+            <h3 className="text-2xl font-bold text-blue-400">LIS Dorm Karen</h3>
             <p className="text-gray-300">
-              The leading dormitory Attendance management educational institutions.
+              The leading Dormitory Prep Attendance management.
             </p>
             <div className="flex space-x-4">
               <a href="https://web.facebook.com/photo/?fbid=237439805562479&set=a.237439782229148&__tn__=%3C" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Facebook size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
-                <Twitter size={20} />
-              </a>
               <a href="https://www.instagram.com/lis.nairobi/" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Instagram size={20} />
               </a>
-              <a href="#" className="text-gray-400 hover:text-blue-400 transition-colors">
+              <a href="https://www.linkedin.com/company/light-international-school/" className="text-gray-400 hover:text-blue-400 transition-colors">
                 <Linkedin size={20} />
               </a>
             </div>
@@ -57,7 +54,7 @@ const Footer = () => {
                 <Mail size={16} />
                 <span>support@lis.sc.ke</span>
               </div>
-              <p>LIGHT INTERNATIONAL SCHOOL</p>
+              <p>LIGHT INTERNATIONAL SCHOOL DORMITORY</p>
               <p>P.O. BOX 1799-00502</p>
               <p>KAREN NAIROBI KENYA</p>
               <p>Tel:+254 703 200 002</p>
