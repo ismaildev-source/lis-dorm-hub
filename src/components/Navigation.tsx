@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { ChevronDown, User, Shield, Users, GraduationCap } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -37,8 +38,8 @@ const Navigation = () => {
               <a href="#about" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200">
                 About
               </a>
-              <a href="#features" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200">
-                Features
+              <a href="#facilities" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200">
+                Facilities
               </a>
               <a href="#contact" className="text-gray-700 hover:text-blue-600 px-3 py-2 text-sm font-medium transition-colors duration-200">
                 Contact
