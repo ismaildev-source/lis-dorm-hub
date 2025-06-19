@@ -62,12 +62,20 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-4">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: `url('/lovable-uploads/7c765988-9b43-4752-85f6-faef66cd424f.png')`
+      }}
+    >
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      <Card className="w-full max-w-md mx-4 relative z-10 bg-white/95 backdrop-blur-sm">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-blue-600 flex items-center justify-center space-x-2">
             <LogIn size={28} />
-            <span>DormHub Login</span>
+            <span>LIS Dorm Karen Login</span>
           </CardTitle>
         </CardHeader>
         <CardContent>

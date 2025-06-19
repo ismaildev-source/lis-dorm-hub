@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus } from 'lucide-react';
+import { Trash2, Edit, Plus, Eye, EyeOff, Download } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type GenderType = 'Male' | 'Female';
@@ -31,10 +31,14 @@ interface ParentUserManagementProps {
 const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCountChange }) => {
   const { toast } = useToast();
   const [parentUsers, setParentUsers] = useState<ParentUser[]>([]);
+  const [filteredUsers, setFilteredUsers] = useState<ParentUser[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<ParentUser | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   const [parentForm, setParentForm] = useState({
     name: '', username: '', gender: 'Male' as GenderType, contact: '', email: '', password: '', student_id: ''
@@ -44,6 +48,16 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
     fetchParentUsers();
     fetchStudents();
   }, []);
+
+  useEffect(() => {
+    const filtered = parentUsers.filter(user =>
+      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.username.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.contact.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setFilteredUsers(filtered);
+  }, [parentUsers, searchTerm]);
 
   const fetchStudents = async () => {
     try {
@@ -85,6 +99,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
 
       setParentForm({ name: '', username: '', gender: 'Male', contact: '', email: '', password: '', student_id: '' });
       setOpenDialog(false);
+      setShowPassword(false);
       fetchParentUsers();
       onUserCountChange();
     } catch (error: any) {
@@ -139,6 +154,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
       });
 
       setEditingItem(null);
+      setShowEditPassword(false);
       fetchParentUsers();
       onUserCountChange();
     } catch (error: any) {
@@ -151,94 +167,140 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
     }
   };
 
+  const exportToCSV = () => {
+    const headers = ['Name', 'Username', 'Gender', 'Contact', 'Email'];
+    const csvContent = [
+      headers.join(','),
+      ...filteredUsers.map(user => [
+        user.name,
+        user.username,
+        user.gender,
+        user.contact,
+        user.email
+      ].join(','))
+    ].join('\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'parent_users.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Parent Users</CardTitle>
-        <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-          <DialogTrigger asChild>
-            <Button>
-              <Plus className="w-4 h-4 mr-2" /> Add Parent
+        <div className="flex gap-2">
+          <div className="flex gap-2">
+            <Input
+              placeholder="Search parent users..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-64"
+            />
+            <Button onClick={exportToCSV} variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
             </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add Parent User</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="parent-name">Name</Label>
-                <Input
-                  id="parent-name"
-                  value={parentForm.name}
-                  onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="parent-username">Username</Label>
-                <Input
-                  id="parent-username"
-                  value={parentForm.username}
-                  onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="parent-gender">Gender</Label>
-                <Select value={parentForm.gender} onValueChange={(value: GenderType) => setParentForm({...parentForm, gender: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Male">Male</SelectItem>
-                    <SelectItem value="Female">Female</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="parent-student">Student</Label>
-                <Select value={parentForm.student_id} onValueChange={(value) => setParentForm({...parentForm, student_id: value})}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {students.map(student => (
-                      <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div>
-                <Label htmlFor="parent-contact">Contact</Label>
-                <Input
-                  id="parent-contact"
-                  value={parentForm.contact}
-                  onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="parent-email">Email</Label>
-                <Input
-                  id="parent-email"
-                  type="email"
-                  value={parentForm.email}
-                  onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
-                />
-              </div>
-              <div>
-                <Label htmlFor="parent-password">Password</Label>
-                <Input
-                  id="parent-password"
-                  type="password"
-                  value={parentForm.password}
-                  onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
-                />
-              </div>
-              <Button onClick={handleAddUser} className="w-full">
-                Add Parent
+          </div>
+          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="w-4 h-4 mr-2" /> Add Parent
               </Button>
-            </div>
-          </DialogContent>
-        </Dialog>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add Parent User</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <Label htmlFor="parent-name">Name</Label>
+                  <Input
+                    id="parent-name"
+                    value={parentForm.name}
+                    onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="parent-username">Username</Label>
+                  <Input
+                    id="parent-username"
+                    value={parentForm.username}
+                    onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="parent-gender">Gender</Label>
+                  <Select value={parentForm.gender} onValueChange={(value: GenderType) => setParentForm({...parentForm, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="parent-student">Student</Label>
+                  <Select value={parentForm.student_id} onValueChange={(value) => setParentForm({...parentForm, student_id: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {students.map(student => (
+                        <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label htmlFor="parent-contact">Contact</Label>
+                  <Input
+                    id="parent-contact"
+                    value={parentForm.contact}
+                    onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="parent-email">Email</Label>
+                  <Input
+                    id="parent-email"
+                    type="email"
+                    value={parentForm.email}
+                    onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
+                  />
+                </div>
+                <div>
+                  <Label htmlFor="parent-password">Password</Label>
+                  <div className="relative">
+                    <Input
+                      id="parent-password"
+                      type={showPassword ? "text" : "password"}
+                      value={parentForm.password}
+                      onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                <Button onClick={handleAddUser} className="w-full">
+                  Add Parent
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
       </CardHeader>
       <CardContent>
         <Table>
@@ -253,7 +315,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
             </TableRow>
           </TableHeader>
           <TableBody>
-            {parentUsers.map((parent) => (
+            {filteredUsers.map((parent) => (
               <TableRow key={parent.id}>
                 <TableCell>{parent.name}</TableCell>
                 <TableCell>{parent.username}</TableCell>
@@ -298,11 +360,61 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                   />
                 </div>
                 <div>
+                  <Label>Gender</Label>
+                  <Select value={editingItem.gender} onValueChange={(value: GenderType) => setEditingItem({...editingItem, gender: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Male">Male</SelectItem>
+                      <SelectItem value="Female">Female</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div>
+                  <Label>Contact</Label>
+                  <Input
+                    value={editingItem.contact || ''}
+                    onChange={(e) => setEditingItem({...editingItem, contact: e.target.value})}
+                  />
+                </div>
+                <div>
                   <Label>Email</Label>
                   <Input
                     value={editingItem.email || ''}
                     onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
                   />
+                </div>
+                <div>
+                  <Label>Password</Label>
+                  <div className="relative">
+                    <Input
+                      type={showEditPassword ? "text" : "password"}
+                      value={editingItem.password || ''}
+                      onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditPassword(!showEditPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                    >
+                      {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  <Label>Student</Label>
+                  <Select value={editingItem.student_id} onValueChange={(value) => setEditingItem({...editingItem, student_id: value})}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {students.map(student => (
+                        <SelectItem key={student.id} value={student.id}>{student.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <Button onClick={handleEditUser} className="w-full">
                   Update Parent User

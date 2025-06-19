@@ -1,7 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../contexts/AuthContext';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
@@ -10,43 +9,38 @@ import { Shield } from 'lucide-react';
 
 const AdminLogin = () => {
   const navigate = useNavigate();
-  const { login, isAuthenticated, user } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    if (isAuthenticated && user?.role === 'admin') {
-      navigate('/admin/dashboard');
-    }
-  }, [isAuthenticated, user, navigate]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
-
-    try {
-      const result = await login(username, password);
-      
-      if (result.success && result.user?.role === 'admin') {
-        navigate('/admin/dashboard');
-      } else {
-        setError('Invalid admin credentials');
-      }
-    } catch (error) {
-      setError('Login failed');
+    
+    // Simple hardcoded admin check for demo
+    if (username === 'admin' && password === 'admin123') {
+      navigate('/admin/dashboard');
+    } else {
+      setError('Invalid admin credentials');
     }
     
     setLoading(false);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50 flex items-center justify-center">
-      <Card className="w-full max-w-md mx-4">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: `url('/lovable-uploads/7c765988-9b43-4752-85f6-faef66cd424f.png')`
+      }}
+    >
+      {/* Overlay for better readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      <Card className="w-full max-w-md mx-4 relative z-10 bg-white/95 backdrop-blur-sm">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold text-blue-600 flex items-center justify-center space-x-2">
+          <CardTitle className="text-2xl font-bold text-red-600 flex items-center justify-center space-x-2">
             <Shield size={28} />
             <span>Admin Login</span>
           </CardTitle>
@@ -54,7 +48,7 @@ const AdminLogin = () => {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="username">Admin Username</Label>
               <Input
                 id="username"
                 type="text"
@@ -66,7 +60,7 @@ const AdminLogin = () => {
             </div>
             
             <div>
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password">Admin Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -83,7 +77,7 @@ const AdminLogin = () => {
 
             <Button
               type="submit"
-              className="w-full"
+              className="w-full bg-red-600 hover:bg-red-700"
               disabled={loading}
             >
               {loading ? 'Logging in...' : 'Login as Admin'}
