@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus, Download, Search } from 'lucide-react';
+import { Trash2, Edit, Plus, Download, Search, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type GenderType = 'Male' | 'Female';
@@ -36,6 +36,7 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<SupervisorUser | null>(null);
+  const [showEditPassword, setShowEditPassword] = useState(false);
 
   const [supervisorForm, setSupervisorForm] = useState({
     name: '', username: '', gender: 'Male' as GenderType, date_of_birth: '', room: '', contact: '', email: '', password: ''
@@ -266,12 +267,21 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
                 </div>
                 <div>
                   <Label htmlFor="supervisor-password">Password</Label>
-                  <Input
-                    id="supervisor-password"
-                    type="password"
-                    value={supervisorForm.password}
-                    onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showEditPassword ? "text" : "password"}
+                      value={supervisorForm.password}
+                      onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditPassword(!showEditPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                    >
+                      {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button onClick={handleAddUser} className="w-full">
                   Add Supervisor
@@ -401,11 +411,21 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
                 </div>
                 <div>
                   <Label>Password</Label>
-                  <Input
-                    type="password"
-                    value={editingItem.password || ''}
-                    onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
-                  />
+                  <div className="relative">
+                    <Input
+                      type={showEditPassword ? "text" : "password"}
+                      value={editingItem.password || ''}
+                      onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
+                      className="pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowEditPassword(!showEditPassword)}
+                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                    >
+                      {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button onClick={handleEditUser} className="w-full">
                   Update Supervisor User
