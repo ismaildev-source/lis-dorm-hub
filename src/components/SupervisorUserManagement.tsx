@@ -1,14 +1,14 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus, Download, Search, Eye, EyeOff } from 'lucide-react';
+import { Plus, Download } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import SupervisorUserForm from './supervisors/SupervisorUserForm';
+import SupervisorUserTable from './supervisors/SupervisorUserTable';
+import SupervisorUserSearch from './supervisors/SupervisorUserSearch';
 
 type GenderType = 'Male' | 'Female';
 
@@ -36,7 +36,7 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
   const [loading, setLoading] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const [editingItem, setEditingItem] = useState<SupervisorUser | null>(null);
-  const [showEditPassword, setShowEditPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const [supervisorForm, setSupervisorForm] = useState({
     name: '', username: '', gender: 'Male' as GenderType, date_of_birth: '', room: '', contact: '', email: '', password: ''
@@ -178,6 +178,16 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
     window.URL.revokeObjectURL(url);
   };
 
+  const handleFormChange = (field: string, value: string | GenderType) => {
+    setSupervisorForm(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleEditFormChange = (field: string, value: string | GenderType) => {
+    if (editingItem) {
+      setEditingItem({ ...editingItem, [field]: value });
+    }
+  };
+
   return (
     <Card>
       <CardHeader className="flex flex-row items-center justify-between">
@@ -193,246 +203,49 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
                 <Plus className="w-4 h-4 mr-2" /> Add Supervisor
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Add Supervisor</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                <div>
-                  <Label htmlFor="supervisor-name">Name</Label>
-                  <Input
-                    id="supervisor-name"
-                    value={supervisorForm.name}
-                    onChange={(e) => setSupervisorForm({...supervisorForm, name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-username">Username</Label>
-                  <Input
-                    id="supervisor-username"
-                    value={supervisorForm.username}
-                    onChange={(e) => setSupervisorForm({...supervisorForm, username: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-gender">Gender</Label>
-                  <Select value={supervisorForm.gender} onValueChange={(value: GenderType) => setSupervisorForm({...supervisorForm, gender: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-dob">Date of Birth</Label>
-                  <Input
-                    id="supervisor-dob"
-                    type="date"
-                    value={supervisorForm.date_of_birth}
-                    onChange={(e) => setSupervisorForm({...supervisorForm, date_of_birth: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-room">Room</Label>
-                  <Select value={supervisorForm.room} onValueChange={(value) => setSupervisorForm({...supervisorForm, room: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supervisorRooms.map(room => (
-                        <SelectItem key={room} value={room}>{room}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-contact">Contact</Label>
-                  <Input
-                    id="supervisor-contact"
-                    value={supervisorForm.contact}
-                    onChange={(e) => setSupervisorForm({...supervisorForm, contact: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-email">Email</Label>
-                  <Input
-                    id="supervisor-email"
-                    type="email"
-                    value={supervisorForm.email}
-                    onChange={(e) => setSupervisorForm({...supervisorForm, email: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="supervisor-password">Password</Label>
-                  <div className="relative">
-                    <Input
-                      type={showEditPassword ? "text" : "password"}
-                      value={supervisorForm.password}
-                      onChange={(e) => setSupervisorForm({...supervisorForm, password: e.target.value})}
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowEditPassword(!showEditPassword)}
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button onClick={handleAddUser} className="w-full">
-                  Add Supervisor
-                </Button>
-              </div>
-            </DialogContent>
           </Dialog>
         </div>
       </CardHeader>
       <CardContent>
-        <div className="mb-4">
-          <div className="relative">
-            <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
-            <Input
-              placeholder="Search supervisor users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
-            />
-          </div>
-        </div>
+        <SupervisorUserSearch 
+          searchTerm={searchTerm}
+          onSearchChange={setSearchTerm}
+        />
 
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Username</TableHead>
-              <TableHead>Gender</TableHead>
-              <TableHead>Room</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.map((supervisor) => (
-              <TableRow key={supervisor.id}>
-                <TableCell>{supervisor.name}</TableCell>
-                <TableCell>{supervisor.username}</TableCell>
-                <TableCell>{supervisor.gender}</TableCell>
-                <TableCell>{supervisor.room}</TableCell>
-                <TableCell>{supervisor.contact}</TableCell>
-                <TableCell>{supervisor.email}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button size="sm" variant="outline" onClick={() => setEditingItem(supervisor)}>
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button size="sm" variant="destructive" onClick={() => handleDeleteUser(supervisor.id)}>
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <SupervisorUserTable 
+          supervisorUsers={filteredUsers}
+          onEdit={setEditingItem}
+          onDelete={handleDeleteUser}
+        />
 
-        {/* Edit Dialog */}
+        {/* Add Form */}
+        <SupervisorUserForm 
+          isOpen={openDialog}
+          onClose={() => setOpenDialog(false)}
+          onSubmit={handleAddUser}
+          formData={supervisorForm}
+          onFormChange={handleFormChange}
+          showPassword={showPassword}
+          onTogglePassword={() => setShowPassword(!showPassword)}
+          title="Add Supervisor"
+          submitText="Add Supervisor"
+          supervisorRooms={supervisorRooms}
+        />
+
+        {/* Edit Form */}
         {editingItem && (
-          <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent className="max-w-2xl">
-              <DialogHeader>
-                <DialogTitle>Edit Supervisor User</DialogTitle>
-              </DialogHeader>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    value={editingItem.name || ''}
-                    onChange={(e) => setEditingItem({...editingItem, name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Username</Label>
-                  <Input
-                    value={editingItem.username || ''}
-                    onChange={(e) => setEditingItem({...editingItem, username: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Gender</Label>
-                  <Select value={editingItem.gender} onValueChange={(value: GenderType) => setEditingItem({...editingItem, gender: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Male">Male</SelectItem>
-                      <SelectItem value="Female">Female</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Date of Birth</Label>
-                  <Input
-                    type="date"
-                    value={editingItem.date_of_birth || ''}
-                    onChange={(e) => setEditingItem({...editingItem, date_of_birth: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Room</Label>
-                  <Select value={editingItem.room} onValueChange={(value) => setEditingItem({...editingItem, room: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supervisorRooms.map(room => (
-                        <SelectItem key={room} value={room}>{room}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Contact</Label>
-                  <Input
-                    value={editingItem.contact || ''}
-                    onChange={(e) => setEditingItem({...editingItem, contact: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Email</Label>
-                  <Input
-                    value={editingItem.email || ''}
-                    onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Password</Label>
-                  <div className="relative">
-                    <Input
-                      type={showEditPassword ? "text" : "password"}
-                      value={editingItem.password || ''}
-                      onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
-                      className="pr-10"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowEditPassword(!showEditPassword)}
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                </div>
-                <Button onClick={handleEditUser} className="w-full">
-                  Update Supervisor User
-                </Button>
-              </div>
-            </DialogContent>
-          </Dialog>
+          <SupervisorUserForm 
+            isOpen={!!editingItem}
+            onClose={() => setEditingItem(null)}
+            onSubmit={handleEditUser}
+            formData={editingItem}
+            onFormChange={handleEditFormChange}
+            showPassword={showPassword}
+            onTogglePassword={() => setShowPassword(!showPassword)}
+            title="Edit Supervisor User"
+            submitText="Update Supervisor User"
+            supervisorRooms={supervisorRooms}
+          />
         )}
       </CardContent>
     </Card>
