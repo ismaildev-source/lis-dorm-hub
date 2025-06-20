@@ -40,7 +40,7 @@ interface AttendanceRecord {
   student_id: string;
   attendance_status: AttendanceStatus;
   date: string;
-  study_type: StudyType;
+  study_types: StudyType[];
   grade_level: GradeLevelType;
   absent_reason: string;
   is_late: boolean;
@@ -67,7 +67,7 @@ const SupervisorDashboard = () => {
     student_id: '',
     attendance_status: 'Present' as AttendanceStatus,
     date: new Date().toISOString().split('T')[0],
-    study_type: 'Prep1 19:10-20:00' as StudyType,
+    study_types: [] as StudyType[],
     grade_level: 'Year 9' as GradeLevelType,
     absent_reason: '',
     is_late: false,
@@ -76,6 +76,14 @@ const SupervisorDashboard = () => {
     is_doing_nothing: false,
     comments: '',
   });
+
+  const studyTypeOptions: StudyType[] = [
+    'Prep1 19:10-20:00',
+    'Prep2 21:10-22:00',
+    'Saturday Study Time',
+    'Sunday Study Time',
+    'Extra/Special Study Time'
+  ];
 
   const handleLogout = () => {
     setShowLogoutConfirm(true);
@@ -134,12 +142,35 @@ const SupervisorDashboard = () => {
     });
   };
 
+  const handleStudyTypeChange = (studyType: StudyType, checked: boolean) => {
+    const updatedStudyTypes = checked
+      ? [...attendanceForm.study_types, studyType]
+      : attendanceForm.study_types.filter(type => type !== studyType);
+    
+    setAttendanceForm({
+      ...attendanceForm,
+      study_types: updatedStudyTypes
+    });
+  };
+
   const handleSubmitAttendance = async () => {
     try {
       setLoading(true);
       
+      // For now, we'll store the first study type in the database
+      // In a real implementation, you might want to modify the database schema
       const attendanceData = {
-        ...attendanceForm,
+        student_id: attendanceForm.student_id,
+        attendance_status: attendanceForm.attendance_status,
+        date: attendanceForm.date,
+        study_type: attendanceForm.study_types[0] || 'Prep1 19:10-20:00',
+        grade_level: attendanceForm.grade_level,
+        absent_reason: attendanceForm.absent_reason,
+        is_late: attendanceForm.is_late,
+        is_noise: attendanceForm.is_noise,
+        is_leave_early: attendanceForm.is_leave_early,
+        is_doing_nothing: attendanceForm.is_doing_nothing,
+        comments: attendanceForm.comments,
         supervisor_id: user?.id,
       };
 
@@ -159,7 +190,7 @@ const SupervisorDashboard = () => {
         student_id: '',
         attendance_status: 'Present',
         date: new Date().toISOString().split('T')[0],
-        study_type: 'Prep1 19:10-20:00',
+        study_types: [],
         grade_level: 'Year 9',
         absent_reason: '',
         is_late: false,
@@ -293,23 +324,22 @@ const SupervisorDashboard = () => {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="study-type">Study Type</Label>
-                  <Select 
-                    value={attendanceForm.study_type} 
-                    onValueChange={(value: StudyType) => setAttendanceForm({...attendanceForm, study_type: value})}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Prep1 19:10-20:00">Prep1 19:10-20:00</SelectItem>
-                      <SelectItem value="Prep2 21:10-22:00">Prep2 21:10-22:00</SelectItem>
-                      <SelectItem value="Saturday Study Time">Saturday Study Time</SelectItem>
-                      <SelectItem value="Sunday Study Time">Sunday Study Time</SelectItem>
-                      <SelectItem value="Extra/Special Study Time">Extra/Special Study Time</SelectItem>
-                    </SelectContent>
-                  </Select>
+                <div className="space-y-2">
+                  <Label>Study Type</Label>
+                  <div className="flex flex-wrap gap-4">
+                    {studyTypeOptions.map((studyType) => (
+                      <div key={studyType} className="flex items-center space-x-2">
+                        <Checkbox
+                          id={studyType}
+                          checked={attendanceForm.study_types.includes(studyType)}
+                          onCheckedChange={(checked) => handleStudyTypeChange(studyType, !!checked)}
+                        />
+                        <Label htmlFor={studyType} className="whitespace-nowrap text-sm">
+                          {studyType}
+                        </Label>
+                      </div>
+                    ))}
+                  </div>
                 </div>
 
                 {attendanceForm.attendance_status === 'Absent' && (
@@ -326,7 +356,7 @@ const SupervisorDashboard = () => {
 
                 <div className="space-y-2">
                   <Label>Behavioral Notes</Label>
-                  <div className="space-y-2">
+                  <div className="flex flex-wrap gap-4">
                     <div className="flex items-center space-x-2">
                       <Checkbox
                         id="late"
@@ -376,7 +406,7 @@ const SupervisorDashboard = () => {
                 <Button 
                   onClick={handleSubmitAttendance} 
                   className="w-full"
-                  disabled={loading || !attendanceForm.student_id}
+                  disabled={loading || !attendanceForm.student_id || attendanceForm.study_types.length === 0}
                 >
                   Submit Attendance
                 </Button>
