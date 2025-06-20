@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -160,12 +159,23 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ onUserCou
   };
 
   const handleDeleteUser = async (id: string) => {
-    if (!confirm('Are you sure you want to delete this student?')) return;
+    if (!confirm('Are you sure you want to delete this student? Note: This will fail if the student has attendance records.')) return;
 
     try {
       const { error } = await supabase.from('student_users').delete().eq('id', id);
       
-      if (error) throw error;
+      if (error) {
+        // Check if it's a foreign key constraint error
+        if (error.code === '23503') {
+          toast({
+            title: "Cannot Delete Student",
+            description: "This student has attendance records and cannot be deleted. Attendance records must be preserved for historical purposes.",
+            variant: "destructive",
+          });
+          return;
+        }
+        throw error;
+      }
 
       toast({
         title: "Success",
