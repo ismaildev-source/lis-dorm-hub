@@ -57,6 +57,7 @@ export type Database = {
           is_noise: boolean | null
           student_id: string
           study_type: Database["public"]["Enums"]["study_type"]
+          study_types: string[] | null
           supervisor_id: string
           updated_at: string | null
         }
@@ -74,6 +75,7 @@ export type Database = {
           is_noise?: boolean | null
           student_id: string
           study_type: Database["public"]["Enums"]["study_type"]
+          study_types?: string[] | null
           supervisor_id: string
           updated_at?: string | null
         }
@@ -91,6 +93,7 @@ export type Database = {
           is_noise?: boolean | null
           student_id?: string
           study_type?: Database["public"]["Enums"]["study_type"]
+          study_types?: string[] | null
           supervisor_id?: string
           updated_at?: string | null
         }

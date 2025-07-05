@@ -18,7 +18,6 @@ const Login = () => {
 
   useEffect(() => {
     if (isAuthenticated && user) {
-      // Redirect based on user role to correct routes that exist in App.tsx
       switch (user.role) {
         case 'admin':
           navigate('/admin/dashboard');
@@ -66,50 +65,52 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50">
-      <Card className="w-full max-w-md mx-4 shadow-lg">
-        <CardHeader className="text-center pb-6">
-          <CardTitle className="text-2xl font-bold text-blue-600 flex items-center justify-center space-x-2">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
+      <Card className="w-full max-w-md mx-4 shadow-xl bg-white">
+        <CardHeader className="text-center pb-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
+          <CardTitle className="text-2xl font-bold flex items-center justify-center space-x-2">
             <LogIn size={28} />
             <span>DormHub Login</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="px-8 pb-8">
+        <CardContent className="px-8 pb-8 pt-6">
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
-              <Label htmlFor="username" className="text-gray-700 font-medium">Username</Label>
+              <Label htmlFor="username" className="text-gray-700 font-semibold">Username</Label>
               <Input
                 id="username"
                 type="text"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 placeholder="Enter your username"
-                className="mt-2 border-gray-300 rounded-md"
+                className="mt-2 bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg py-3"
                 required
               />
             </div>
             
             <div>
-              <Label htmlFor="password" className="text-gray-700 font-medium">Password</Label>
+              <Label htmlFor="password" className="text-gray-700 font-semibold">Password</Label>
               <Input
                 id="password"
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Enter your password"
-                className="mt-2 border-gray-300 rounded-md"
+                className="mt-2 bg-white border-2 border-gray-200 focus:border-blue-500 rounded-lg py-3"
                 required
               />
             </div>
 
             {error && (
-              <div className="text-red-600 text-sm text-center bg-red-50 p-3 rounded-md">{error}</div>
+              <div className="text-red-600 text-sm text-center bg-red-50 p-4 rounded-lg border border-red-200">
+                {error}
+              </div>
             )}
 
             <div className="space-y-3">
               <Button
                 type="submit"
-                className="w-full bg-slate-800 hover:bg-slate-700 text-white py-3 rounded-md font-medium"
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-lg font-semibold text-lg shadow-lg"
                 disabled={loading}
               >
                 {loading ? 'Logging in...' : 'Login'}
@@ -117,7 +118,7 @@ const Login = () => {
               <Button
                 type="button"
                 variant="outline"
-                className="w-full border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-md font-medium"
+                className="w-full bg-white border-2 border-gray-300 text-gray-700 hover:bg-gray-50 py-3 rounded-lg font-semibold"
                 onClick={handleCancel}
               >
                 Cancel
