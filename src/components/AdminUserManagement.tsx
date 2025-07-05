@@ -100,23 +100,28 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Admin Users</CardTitle>
-        <div className="flex gap-2">
-          <Button onClick={exportToCSV} variant="outline" size="sm">
+    <Card className="bg-white border-gray-100 rounded-xl shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
+        <CardTitle className="text-xl font-semibold text-gray-800">Admin Users</CardTitle>
+        <div className="flex gap-3">
+          <Button 
+            onClick={exportToCSV} 
+            variant="outline" 
+            size="sm"
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+          >
             <Download className="w-4 h-4 mr-2" />
             Export CSV
           </Button>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
                 <Plus className="w-4 h-4 mr-2" /> Add Admin
               </Button>
             </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Add Admin User</DialogTitle>
+            <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
+              <DialogHeader className="pb-4">
+                <DialogTitle className="text-xl font-semibold text-gray-800">Add Admin User</DialogTitle>
               </DialogHeader>
               <AdminUserForm
                 formData={adminForm}
@@ -127,11 +132,13 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
           </Dialog>
         </div>
       </CardHeader>
-      <CardContent>
-        <AdminUserSearch
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+      <CardContent className="p-6">
+        <div className="mb-6">
+          <AdminUserSearch
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+        </div>
         
         <AdminUserTable
           users={filteredUsers}
@@ -142,9 +149,9 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
         {/* Edit Dialog */}
         {editingItem && (
           <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Edit Admin User</DialogTitle>
+            <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
+              <DialogHeader className="pb-4">
+                <DialogTitle className="text-xl font-semibold text-gray-800">Edit Admin User</DialogTitle>
               </DialogHeader>
               <AdminUserForm
                 formData={editingItem}

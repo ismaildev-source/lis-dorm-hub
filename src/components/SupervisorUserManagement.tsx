@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -189,28 +188,35 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
   };
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Supervisor Users</CardTitle>
-        <div className="flex gap-2">
-          <Button onClick={exportToCSV} variant="outline" size="sm">
+    <Card className="bg-white border-gray-100 rounded-xl shadow-sm">
+      <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
+        <CardTitle className="text-xl font-semibold text-gray-800">Supervisor Users</CardTitle>
+        <div className="flex gap-3">
+          <Button 
+            onClick={exportToCSV} 
+            variant="outline" 
+            size="sm"
+            className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+          >
             <Download className="w-4 h-4 mr-2" />
             Export CSV
           </Button>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
-              <Button>
+              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
                 <Plus className="w-4 h-4 mr-2" /> Add Supervisor
               </Button>
             </DialogTrigger>
           </Dialog>
         </div>
       </CardHeader>
-      <CardContent>
-        <SupervisorUserSearch 
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-        />
+      <CardContent className="p-6">
+        <div className="mb-6">
+          <SupervisorUserSearch 
+            searchTerm={searchTerm}
+            onSearchChange={setSearchTerm}
+          />
+        </div>
 
         <SupervisorUserTable 
           supervisorUsers={filteredUsers}
