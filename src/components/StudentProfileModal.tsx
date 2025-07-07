@@ -31,18 +31,21 @@ const StudentProfileModal = ({ student, isOpen, onClose }: StudentProfileModalPr
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="flex items-center space-x-2">
-            <User className="w-5 h-5" />
+      <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto bg-white border-0 shadow-2xl">
+        <DialogHeader className="pb-4 border-b border-gray-100">
+          <DialogTitle className="flex items-center space-x-2 text-xl font-bold text-gray-800">
+            <User className="w-6 h-6 text-blue-600" />
             <span>Student Profile</span>
           </DialogTitle>
         </DialogHeader>
         
-        <div className="space-y-6">
+        <div className="space-y-6 pt-4">
           {/* Basic Information */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-3">Basic Information</h3>
+          <div className="bg-gray-50 p-6 rounded-xl shadow-sm border border-gray-100">
+            <h3 className="font-bold text-lg mb-4 text-gray-800 flex items-center space-x-2">
+              <User className="w-5 h-5 text-blue-600" />
+              <span>Basic Information</span>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <User className="w-4 h-4 text-gray-500" />
@@ -77,8 +80,11 @@ const StudentProfileModal = ({ student, isOpen, onClose }: StudentProfileModalPr
           </div>
 
           {/* Academic Information */}
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-3">Academic Information</h3>
+          <div className="bg-blue-50 p-6 rounded-xl shadow-sm border border-blue-100">
+            <h3 className="font-bold text-lg mb-4 text-gray-800 flex items-center space-x-2">
+              <GraduationCap className="w-5 h-5 text-blue-600" />
+              <span>Academic Information</span>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <GraduationCap className="w-4 h-4 text-blue-500" />
@@ -94,8 +100,11 @@ const StudentProfileModal = ({ student, isOpen, onClose }: StudentProfileModalPr
           </div>
 
           {/* Accommodation Information */}
-          <div className="bg-green-50 p-4 rounded-lg">
-            <h3 className="font-semibold text-lg mb-3">Accommodation Information</h3>
+          <div className="bg-green-50 p-6 rounded-xl shadow-sm border border-green-100">
+            <h3 className="font-bold text-lg mb-4 text-gray-800 flex items-center space-x-2">
+              <MapPin className="w-5 h-5 text-green-600" />
+              <span>Accommodation Information</span>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="flex items-center space-x-2">
                 <MapPin className="w-4 h-4 text-green-500" />
@@ -114,8 +123,11 @@ const StudentProfileModal = ({ student, isOpen, onClose }: StudentProfileModalPr
 
           {/* Contact Information */}
           {(student.home_address || student.parent_name || student.parent_contact) && (
-            <div className="bg-yellow-50 p-4 rounded-lg">
-              <h3 className="font-semibold text-lg mb-3">Contact Information</h3>
+            <div className="bg-yellow-50 p-6 rounded-xl shadow-sm border border-yellow-100">
+              <h3 className="font-bold text-lg mb-4 text-gray-800 flex items-center space-x-2">
+                <Phone className="w-5 h-5 text-yellow-600" />
+                <span>Contact Information</span>
+              </h3>
               <div className="space-y-3">
                 {student.home_address && (
                   <div className="flex items-start space-x-2">
@@ -145,8 +157,12 @@ const StudentProfileModal = ({ student, isOpen, onClose }: StudentProfileModalPr
           )}
         </div>
 
-        <div className="flex justify-end pt-4">
-          <Button onClick={onClose} variant="outline">
+        <div className="flex justify-end pt-6 border-t border-gray-100">
+          <Button 
+            onClick={onClose} 
+            variant="outline" 
+            className="px-8 py-2 bg-white hover:bg-gray-50 border-gray-300 text-gray-700 font-medium"
+          >
             Close
           </Button>
         </div>
