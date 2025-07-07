@@ -184,9 +184,9 @@ const AdminDashboard = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b">
+      <header className="bg-white shadow-lg">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -198,7 +198,7 @@ const AdminDashboard = () => {
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-2"
+                className="flex items-center space-x-2 shadow-sm"
               >
                 <LogOut size={16} />
                 <span>Logout</span>
@@ -210,18 +210,18 @@ const AdminDashboard = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Navigation Tabs */}
-        <div className="border-b border-gray-200 mb-8">
-          <nav className="-mb-px flex space-x-8">
+        <div className="bg-white rounded-xl shadow-lg mb-8 p-1">
+          <nav className="flex space-x-1">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-4 px-1 border-b-2 font-medium text-sm ${
+                  className={`flex items-center space-x-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
                     activeTab === tab.id
-                      ? 'border-blue-500 text-blue-600'
-                      : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                      ? 'bg-blue-500 text-white shadow-md'
+                      : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                   }`}
                 >
                   <IconComponent size={20} />
@@ -237,9 +237,9 @@ const AdminDashboard = () => {
           <div className="space-y-8">
             {/* User Counts */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              <div className="bg-white p-6 rounded-lg shadow">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-blue-100 rounded-lg">
+                  <div className="p-3 bg-blue-100 rounded-xl">
                     <Shield className="w-6 h-6 text-blue-600" />
                   </div>
                   <div className="ml-4">
@@ -249,9 +249,9 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-green-100 rounded-lg">
+                  <div className="p-3 bg-green-100 rounded-xl">
                     <Users className="w-6 h-6 text-green-600" />
                   </div>
                   <div className="ml-4">
@@ -261,9 +261,9 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-yellow-100 rounded-lg">
+                  <div className="p-3 bg-yellow-100 rounded-xl">
                     <User className="w-6 h-6 text-yellow-600" />
                   </div>
                   <div className="ml-4">
@@ -273,9 +273,9 @@ const AdminDashboard = () => {
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-lg shadow">
+              <div className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-200">
                 <div className="flex items-center">
-                  <div className="p-2 bg-purple-100 rounded-lg">
+                  <div className="p-3 bg-purple-100 rounded-xl">
                     <GraduationCap className="w-6 h-6 text-purple-600" />
                   </div>
                   <div className="ml-4">
@@ -287,11 +287,11 @@ const AdminDashboard = () => {
             </div>
 
             {/* Supervisors and their students */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Supervisors and Their Students</CardTitle>
+            <Card className="bg-white shadow-lg rounded-xl overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+                <CardTitle className="text-xl font-bold text-gray-800">Supervisors and Their Students</CardTitle>
               </CardHeader>
-              <CardContent>
+              <CardContent className="p-6">
                 {supervisors.length === 0 ? (
                   <div className="text-center py-8">
                     <p className="text-gray-500">No supervisors found.</p>
@@ -299,22 +299,23 @@ const AdminDashboard = () => {
                 ) : (
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {supervisors.map((supervisor) => (
-                      <Card key={supervisor.id} className="p-4">
+                      <div key={supervisor.id} className="bg-gradient-to-br from-white to-gray-50 p-4 rounded-xl shadow-md hover:shadow-lg transition-shadow duration-200">
                         <div className="flex items-center justify-between">
                           <div>
-                            <h4 className="font-medium">{supervisor.name}</h4>
-                            <p className="text-sm text-gray-500">{supervisor.email}</p>
+                            <h4 className="font-semibold text-gray-900">{supervisor.name}</h4>
+                            <p className="text-sm text-gray-600">{supervisor.email}</p>
                           </div>
                           <Button
                             onClick={() => setSelectedSupervisor(supervisor)}
                             variant="outline"
                             size="sm"
+                            className="bg-blue-50 hover:bg-blue-100 border-blue-200 text-blue-700 shadow-sm"
                           >
                             <Eye className="w-4 h-4 mr-2" />
                             View Students
                           </Button>
                         </div>
-                      </Card>
+                      </div>
                     ))}
                   </div>
                 )}
@@ -384,42 +385,42 @@ const AdminDashboard = () => {
         )}
         
         {activeTab === 'attendance' && (
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between">
-              <CardTitle>All Attendance Records</CardTitle>
+          <Card className="bg-white shadow-lg rounded-xl overflow-hidden">
+            <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+              <CardTitle className="text-xl font-bold text-gray-800">All Attendance Records</CardTitle>
               <div className="flex gap-2">
-                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm">
+                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm" className="shadow-sm">
                   <Printer className="w-4 h-4 mr-2" />
                   Print
                 </Button>
-                <Button onClick={exportAttendanceToCSV} variant="outline" size="sm">
+                <Button onClick={exportAttendanceToCSV} variant="outline" size="sm" className="shadow-sm">
                   <Download className="w-4 h-4 mr-2" />
                   Export CSV
                 </Button>
               </div>
             </CardHeader>
-            <CardContent>
+            <CardContent className="p-0">
               <div id="attendance-table" className="overflow-x-auto">
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Date</TableHead>
-                      <TableHead>Student</TableHead>
-                      <TableHead>Status</TableHead>
-                      <TableHead>Study Type</TableHead>
-                      <TableHead>Grade</TableHead>
-                      <TableHead>Supervisor</TableHead>
-                      <TableHead>Behavioral Issues</TableHead>
-                      <TableHead className="min-w-[200px]">Comments</TableHead>
+                      <TableHead className="font-bold text-gray-800">Date</TableHead>
+                      <TableHead className="font-bold text-gray-800">Student</TableHead>
+                      <TableHead className="font-bold text-gray-800">Status</TableHead>
+                      <TableHead className="font-bold text-gray-800">Study Type</TableHead>
+                      <TableHead className="font-bold text-gray-800">Grade</TableHead>
+                      <TableHead className="font-bold text-gray-800">Supervisor</TableHead>
+                      <TableHead className="font-bold text-gray-800">Behavioral Issues</TableHead>
+                      <TableHead className="font-bold text-gray-800 min-w-[200px]">Comments</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {attendanceRecords.map((record) => (
                       <TableRow key={record.id}>
-                        <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
-                        <TableCell>{record.student_users?.name || 'N/A'}</TableCell>
+                        <TableCell className="font-medium">{new Date(record.date).toLocaleDateString()}</TableCell>
+                        <TableCell className="font-semibold text-blue-900">{record.student_users?.name || 'N/A'}</TableCell>
                         <TableCell>
-                          <span className={`px-2 py-1 rounded-full text-xs ${
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                             record.attendance_status === 'Present' 
                               ? 'bg-green-100 text-green-800' 
                               : 'bg-red-100 text-red-800'
@@ -427,19 +428,29 @@ const AdminDashboard = () => {
                             {record.attendance_status}
                           </span>
                         </TableCell>
-                        <TableCell>{record.study_type}</TableCell>
-                        <TableCell>{record.grade_level}</TableCell>
-                        <TableCell>{record.supervisor_users?.name || 'N/A'}</TableCell>
                         <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {record.is_late && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Late</span>}
-                            {record.is_noise && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Noise</span>}
-                            {record.is_leave_early && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Left Early</span>}
-                            {record.is_doing_nothing && <span className="px-1 py-0.5 bg-yellow-100 text-yellow-800 text-xs rounded">Inactive</span>}
+                          <div className="text-sm">
+                            {record.study_types && record.study_types.length > 0 
+                              ? record.study_types.join(', ') 
+                              : record.study_type}
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="max-w-xs break-words" title={record.comments}>
+                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                            {record.grade_level}
+                          </span>
+                        </TableCell>
+                        <TableCell className="text-gray-700">{record.supervisor_users?.name || 'N/A'}</TableCell>
+                        <TableCell>
+                          <div className="flex flex-wrap gap-1">
+                            {record.is_late && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Late</span>}
+                            {record.is_noise && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Noise</span>}
+                            {record.is_leave_early && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Left Early</span>}
+                            {record.is_doing_nothing && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Inactive</span>}
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <div className="max-w-xs break-words text-sm" title={record.comments}>
                             {record.comments || 'No comments'}
                           </div>
                         </TableCell>

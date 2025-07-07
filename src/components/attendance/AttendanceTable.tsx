@@ -59,7 +59,7 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
         <div className="animate-pulse">
           <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
           <div className="space-y-3">
@@ -74,7 +74,7 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
 
   if (records.length === 0) {
     return (
-      <div className="bg-white rounded-lg shadow-sm p-8 text-center">
+      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
         <div className="text-gray-400 mb-4">
           <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -87,24 +87,24 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Student</TableHead>
-            <TableHead>Status</TableHead>
-            <TableHead>Study Type</TableHead>
-            <TableHead>Grade</TableHead>
-            <TableHead>Supervisor</TableHead>
-            <TableHead>Notes</TableHead>
-            <TableHead>Issues</TableHead>
-            <TableHead>Comments</TableHead>
+            <TableHead className="font-bold text-gray-800">Date</TableHead>
+            <TableHead className="font-bold text-gray-800">Student</TableHead>
+            <TableHead className="font-bold text-gray-800">Status</TableHead>
+            <TableHead className="font-bold text-gray-800">Study Type</TableHead>
+            <TableHead className="font-bold text-gray-800">Grade</TableHead>
+            <TableHead className="font-bold text-gray-800">Supervisor</TableHead>
+            <TableHead className="font-bold text-gray-800">Notes</TableHead>
+            <TableHead className="font-bold text-gray-800">Issues</TableHead>
+            <TableHead className="font-bold text-gray-800">Comments</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {records.map((record) => (
-            <TableRow key={record.id} className="hover:bg-gray-50">
+            <TableRow key={record.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50">
               <TableCell className="font-medium">
                 {new Date(record.date).toLocaleDateString()}
               </TableCell>
@@ -131,7 +131,7 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
               </TableCell>
               <TableCell>
                 {record.absent_reason && (
-                  <span className="text-sm bg-orange-100 text-orange-800 px-2 py-1 rounded-full">
+                  <span className="text-sm bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
                     {record.absent_reason}
                   </span>
                 )}

@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, PenTool } from 'lucide-react';
 
 type GenderType = 'Male' | 'Female';
 
@@ -30,41 +30,53 @@ const SupervisorUserTable: React.FC<SupervisorUserTableProps> = ({
   onDelete
 }) => {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Username</TableHead>
-          <TableHead>Gender</TableHead>
-          <TableHead>Room</TableHead>
-          <TableHead>Contact</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {supervisorUsers.map((supervisor) => (
-          <TableRow key={supervisor.id}>
-            <TableCell>{supervisor.name}</TableCell>
-            <TableCell>{supervisor.username}</TableCell>
-            <TableCell>{supervisor.gender}</TableCell>
-            <TableCell>{supervisor.room}</TableCell>
-            <TableCell>{supervisor.contact}</TableCell>
-            <TableCell>{supervisor.email}</TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => onEdit(supervisor)}>
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => onDelete(supervisor.id)}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </TableCell>
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="font-bold text-gray-800">Name</TableHead>
+            <TableHead className="font-bold text-gray-800">Username</TableHead>
+            <TableHead className="font-bold text-gray-800">Gender</TableHead>
+            <TableHead className="font-bold text-gray-800">Room</TableHead>
+            <TableHead className="font-bold text-gray-800">Contact</TableHead>
+            <TableHead className="font-bold text-gray-800">Email</TableHead>
+            <TableHead className="font-bold text-gray-800">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {supervisorUsers.map((supervisor) => (
+            <TableRow key={supervisor.id}>
+              <TableCell className="font-medium text-gray-900">{supervisor.name}</TableCell>
+              <TableCell className="text-gray-700">{supervisor.username}</TableCell>
+              <TableCell className="text-gray-700">{supervisor.gender}</TableCell>
+              <TableCell className="text-gray-700">{supervisor.room}</TableCell>
+              <TableCell className="text-gray-700">{supervisor.contact}</TableCell>
+              <TableCell className="text-gray-700">{supervisor.email}</TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => onEdit(supervisor)}
+                    className="h-8 w-8 p-0 bg-blue-50 hover:bg-blue-100 border-blue-200 hover:border-blue-300 shadow-sm"
+                  >
+                    <PenTool className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => onDelete(supervisor.id)}
+                    className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100 border-red-200 hover:border-red-300 shadow-sm"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 

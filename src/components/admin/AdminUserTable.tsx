@@ -2,7 +2,7 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit } from 'lucide-react';
+import { Trash2, PenTool } from 'lucide-react';
 
 type GenderType = 'Male' | 'Female';
 
@@ -27,37 +27,49 @@ const AdminUserTable: React.FC<AdminUserTableProps> = ({
   onDelete
 }) => {
   return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          <TableHead>Name</TableHead>
-          <TableHead>Username</TableHead>
-          <TableHead>Gender</TableHead>
-          <TableHead>Email</TableHead>
-          <TableHead>Actions</TableHead>
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {users.map((admin) => (
-          <TableRow key={admin.id}>
-            <TableCell>{admin.name}</TableCell>
-            <TableCell>{admin.username}</TableCell>
-            <TableCell>{admin.gender}</TableCell>
-            <TableCell>{admin.email}</TableCell>
-            <TableCell>
-              <div className="flex gap-2">
-                <Button size="sm" variant="outline" onClick={() => onEdit(admin)}>
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button size="sm" variant="destructive" onClick={() => onDelete(admin.id)}>
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </TableCell>
+    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <Table>
+        <TableHeader>
+          <TableRow>
+            <TableHead className="font-bold text-gray-800">Name</TableHead>
+            <TableHead className="font-bold text-gray-800">Username</TableHead>
+            <TableHead className="font-bold text-gray-800">Gender</TableHead>
+            <TableHead className="font-bold text-gray-800">Email</TableHead>
+            <TableHead className="font-bold text-gray-800">Actions</TableHead>
           </TableRow>
-        ))}
-      </TableBody>
-    </Table>
+        </TableHeader>
+        <TableBody>
+          {users.map((admin) => (
+            <TableRow key={admin.id}>
+              <TableCell className="font-medium text-gray-900">{admin.name}</TableCell>
+              <TableCell className="text-gray-700">{admin.username}</TableCell>
+              <TableCell className="text-gray-700">{admin.gender}</TableCell>
+              <TableCell className="text-gray-700">{admin.email}</TableCell>
+              <TableCell>
+                <div className="flex gap-2">
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => onEdit(admin)}
+                    className="h-8 w-8 p-0 bg-blue-50 hover:bg-blue-100 border-blue-200 hover:border-blue-300 shadow-sm"
+                  >
+                    <PenTool className="w-4 h-4 text-blue-600" />
+                  </Button>
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    onClick={() => onDelete(admin.id)}
+                    className="h-8 w-8 p-0 bg-red-50 hover:bg-red-100 border-red-200 hover:border-red-300 shadow-sm"
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 };
 
