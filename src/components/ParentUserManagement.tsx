@@ -193,7 +193,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
       <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
         <CardTitle className="text-xl font-semibold text-gray-800">Parent Users</CardTitle>
         <div className="flex gap-3">
-          <div className="flex gap-3">
+          <div className="flex gap-3 print:hidden">
             <Input
               placeholder="Search parent users..."
               value={searchTerm}
