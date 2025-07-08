@@ -65,8 +65,16 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100">
-      <Card className="w-full max-w-md mx-4 shadow-xl bg-white">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: 'url(/lovable-uploads/5a2300a9-e590-42f0-9a9d-df8b27a02794.png)'
+      }}
+    >
+      {/* Dark overlay for better readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      <Card className="w-full max-w-md mx-4 shadow-xl bg-white/95 backdrop-blur-sm relative z-10">
         <CardHeader className="text-center pb-6 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-t-lg">
           <CardTitle className="text-2xl font-bold flex items-center justify-center space-x-2">
             <LogIn size={28} />

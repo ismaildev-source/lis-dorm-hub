@@ -9,7 +9,6 @@ const ImageGallery = () => {
     '/lovable-uploads/c529d743-d0ed-45bb-b9e0-a94c857b1d7f.png',
     '/lovable-uploads/0ca34f9f-6cdc-4bc7-9e46-7cf975296750.png',
     '/lovable-uploads/5f68a442-05a6-4205-9690-39d6ddfec94b.png',
-    '/lovable-uploads/6772ef39-d3a8-49a3-84de-38ee35d80769.png',
     '/lovable-uploads/bd49ba61-5896-459f-a493-add07a1b27d9.png',
     '/lovable-uploads/7b79d326-60ac-43e6-a253-b659846bd4b7.png',
     '/lovable-uploads/9da9dd31-9c6e-4d15-af76-3ee41b7768f2.png',

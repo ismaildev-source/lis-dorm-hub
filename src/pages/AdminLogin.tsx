@@ -32,8 +32,16 @@ const AdminLogin = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
-      <Card className="w-full max-w-md mx-4 shadow-xl bg-white">
+    <div 
+      className="min-h-screen flex items-center justify-center bg-cover bg-center bg-no-repeat relative"
+      style={{
+        backgroundImage: 'url(/lovable-uploads/5a2300a9-e590-42f0-9a9d-df8b27a02794.png)'
+      }}
+    >
+      {/* Dark overlay for better readability */}
+      <div className="absolute inset-0 bg-black/40"></div>
+      
+      <Card className="w-full max-w-md mx-4 shadow-xl bg-white/95 backdrop-blur-sm relative z-10">
         <CardHeader className="text-center pb-6 bg-gradient-to-r from-gray-800 to-gray-900 text-white rounded-t-lg">
           <CardTitle className="text-2xl font-bold flex items-center justify-center space-x-2">
             <Shield size={28} />
