@@ -47,26 +47,26 @@ const SupervisorStudentsView = ({ supervisorId, supervisorName, onClose }: Super
   };
 
   return (
-    <Card className="w-full bg-white shadow-xl rounded-xl overflow-hidden">
-      <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
-        <CardTitle className="flex items-center space-x-3">
+    <Card className="w-full bg-white shadow-xl rounded-xl overflow-hidden max-w-7xl mx-auto">
+      <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-3 sm:p-6">
+        <CardTitle className="flex items-center space-x-2 sm:space-x-3">
           <div className="p-2 bg-blue-100 rounded-lg">
-            <Users className="w-5 h-5 text-blue-600" />
+            <Users className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
           </div>
-          <span className="text-xl font-bold text-gray-800">Students under {supervisorName}</span>
+          <span className="text-lg sm:text-xl font-bold text-gray-800">Students under {supervisorName}</span>
         </CardTitle>
         <Button 
           onClick={onClose} 
           variant="outline" 
           size="sm"
-          className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 shadow-sm"
+          className="bg-red-50 hover:bg-red-100 border-red-200 text-red-700 shadow-sm h-8 w-8 sm:h-auto sm:w-auto p-1 sm:p-2"
         >
-          <X className="w-4 h-4" />
+          <X className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
       </CardHeader>
       <CardContent className="p-0">
         {loading ? (
-          <div className="p-12 text-center">
+          <div className="p-6 sm:p-12 text-center">
             <div className="animate-pulse">
               <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
               <div className="space-y-3">
@@ -77,43 +77,51 @@ const SupervisorStudentsView = ({ supervisorId, supervisorName, onClose }: Super
             </div>
           </div>
         ) : students.length === 0 ? (
-          <div className="p-12 text-center">
+          <div className="p-6 sm:p-12 text-center">
             <div className="text-gray-400 mb-4">
-              <Users className="mx-auto h-12 w-12" />
+              <Users className="mx-auto h-8 w-8 sm:h-12 sm:w-12" />
             </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No students assigned</h3>
-            <p className="text-gray-500">This supervisor has no students assigned yet.</p>
+            <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">No students assigned</h3>
+            <p className="text-sm sm:text-base text-gray-500">This supervisor has no students assigned yet.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="font-bold text-gray-800">Name</TableHead>
-                  <TableHead className="font-bold text-gray-800">Grade</TableHead>
-                  <TableHead className="font-bold text-gray-800">Stream</TableHead>
-                  <TableHead className="font-bold text-gray-800">Room</TableHead>
-                  <TableHead className="font-bold text-gray-800">Age</TableHead>
-                  <TableHead className="font-bold text-gray-800">Email</TableHead>
+                  <TableHead className="font-bold text-gray-800 min-w-[120px]">Name</TableHead>
+                  <TableHead className="font-bold text-gray-800 min-w-[80px] hidden sm:table-cell">Grade</TableHead>
+                  <TableHead className="font-bold text-gray-800 min-w-[80px] hidden md:table-cell">Stream</TableHead>
+                  <TableHead className="font-bold text-gray-800 min-w-[80px] hidden lg:table-cell">Room</TableHead>
+                  <TableHead className="font-bold text-gray-800 min-w-[60px] hidden xl:table-cell">Age</TableHead>
+                  <TableHead className="font-bold text-gray-800 min-w-[150px] hidden xl:table-cell">Email</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {students.map((student) => (
                   <TableRow key={student.id}>
-                    <TableCell className="font-semibold text-blue-900">{student.name}</TableCell>
-                    <TableCell>
-                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+                    <TableCell className="font-semibold text-blue-900">
+                      <div className="truncate max-w-[120px] sm:max-w-none">
+                        {student.name}
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden sm:table-cell">
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
                         {student.grade_level}
                       </span>
                     </TableCell>
-                    <TableCell>
-                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-sm font-medium">
+                    <TableCell className="hidden md:table-cell">
+                      <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
                         {student.stream}
                       </span>
                     </TableCell>
-                    <TableCell className="text-gray-700">{student.room}</TableCell>
-                    <TableCell className="text-gray-700">{student.age}</TableCell>
-                    <TableCell className="text-gray-700">{student.email}</TableCell>
+                    <TableCell className="text-gray-700 hidden lg:table-cell">{student.room}</TableCell>
+                    <TableCell className="text-gray-700 hidden xl:table-cell">{student.age}</TableCell>
+                    <TableCell className="text-gray-700 hidden xl:table-cell">
+                      <div className="truncate max-w-[150px]">
+                        {student.email}
+                      </div>
+                    </TableCell>
                   </TableRow>
                 ))}
               </TableBody>

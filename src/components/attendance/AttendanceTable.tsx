@@ -38,8 +38,8 @@ interface AttendanceTableProps {
 const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
   const getStatusColor = (status: string) => {
     return status === 'Present' 
-      ? 'bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm font-medium' 
-      : 'bg-red-100 text-red-800 px-3 py-1 rounded-full text-sm font-medium';
+      ? 'bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium' 
+      : 'bg-red-100 text-red-800 px-2 py-1 rounded-full text-xs font-medium';
   };
 
   const getBadges = (record: AttendanceRecord) => {
@@ -59,7 +59,7 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 text-center">
         <div className="animate-pulse">
           <div className="h-4 bg-gray-200 rounded w-1/4 mx-auto mb-4"></div>
           <div className="space-y-3">
@@ -74,89 +74,97 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
 
   if (records.length === 0) {
     return (
-      <div className="bg-white rounded-xl shadow-lg p-8 text-center">
+      <div className="bg-white rounded-xl shadow-lg p-4 sm:p-8 text-center">
         <div className="text-gray-400 mb-4">
-          <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg className="mx-auto h-8 w-8 sm:h-12 sm:w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <h3 className="text-lg font-medium text-gray-900 mb-2">No attendance records found</h3>
-        <p className="text-gray-500">Start taking attendance to see records here.</p>
+        <h3 className="text-sm sm:text-lg font-medium text-gray-900 mb-2">No attendance records found</h3>
+        <p className="text-xs sm:text-base text-gray-500">Start taking attendance to see records here.</p>
       </div>
     );
   }
 
   return (
     <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead className="font-bold text-gray-800">Date</TableHead>
-            <TableHead className="font-bold text-gray-800">Student</TableHead>
-            <TableHead className="font-bold text-gray-800">Status</TableHead>
-            <TableHead className="font-bold text-gray-800">Study Type</TableHead>
-            <TableHead className="font-bold text-gray-800">Grade</TableHead>
-            <TableHead className="font-bold text-gray-800">Supervisor</TableHead>
-            <TableHead className="font-bold text-gray-800">Notes</TableHead>
-            <TableHead className="font-bold text-gray-800">Issues</TableHead>
-            <TableHead className="font-bold text-gray-800">Comments</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {records.map((record) => (
-            <TableRow key={record.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50">
-              <TableCell className="font-medium">
-                {new Date(record.date).toLocaleDateString()}
-              </TableCell>
-              <TableCell className="font-semibold text-blue-900">
-                {record.student_users.name}
-              </TableCell>
-              <TableCell>
-                <span className={getStatusColor(record.attendance_status)}>
-                  {record.attendance_status}
-                </span>
-              </TableCell>
-              <TableCell>
-                <div className="text-sm text-gray-600">
-                  {getStudyTypes(record)}
-                </div>
-              </TableCell>
-              <TableCell>
-                <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-                  {record.grade_level}
-                </span>
-              </TableCell>
-              <TableCell className="text-gray-600">
-                {record.supervisor_users.name}
-              </TableCell>
-              <TableCell>
-                {record.absent_reason && (
-                  <span className="text-sm bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
-                    {record.absent_reason}
-                  </span>
-                )}
-              </TableCell>
-              <TableCell>
-                <div className="flex flex-wrap gap-1">
-                  {getBadges(record).map((badge, index) => (
-                    <span
-                      key={index}
-                      className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium"
-                    >
-                      {badge}
-                    </span>
-                  ))}
-                </div>
-              </TableCell>
-              <TableCell>
-                <div className="max-w-32 text-sm text-gray-600" title={record.comments}>
-                  {record.comments || '-'}
-                </div>
-              </TableCell>
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="font-bold text-gray-800 min-w-[80px]">Date</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[100px]">Student</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[80px]">Status</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[120px] hidden sm:table-cell">Study Type</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[70px] hidden md:table-cell">Grade</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[100px] hidden lg:table-cell">Supervisor</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[80px] hidden lg:table-cell">Notes</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[80px] hidden xl:table-cell">Issues</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[100px] hidden xl:table-cell">Comments</TableHead>
             </TableRow>
-          ))}
-        </TableBody>
-      </Table>
+          </TableHeader>
+          <TableBody>
+            {records.map((record) => (
+              <TableRow key={record.id} className="hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50">
+                <TableCell className="font-medium">
+                  <div className="text-xs sm:text-sm">
+                    {new Date(record.date).toLocaleDateString()}
+                  </div>
+                </TableCell>
+                <TableCell className="font-semibold text-blue-900">
+                  <div className="text-xs sm:text-sm truncate max-w-[100px] sm:max-w-none">
+                    {record.student_users.name}
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <span className={getStatusColor(record.attendance_status)}>
+                    {record.attendance_status}
+                  </span>
+                </TableCell>
+                <TableCell className="hidden sm:table-cell">
+                  <div className="text-xs text-gray-600 max-w-[120px] truncate">
+                    {getStudyTypes(record)}
+                  </div>
+                </TableCell>
+                <TableCell className="hidden md:table-cell">
+                  <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                    {record.grade_level}
+                  </span>
+                </TableCell>
+                <TableCell className="hidden lg:table-cell text-gray-600">
+                  <div className="text-xs truncate max-w-[100px]">
+                    {record.supervisor_users.name}
+                  </div>
+                </TableCell>
+                <TableCell className="hidden lg:table-cell">
+                  {record.absent_reason && (
+                    <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded-full font-medium">
+                      {record.absent_reason}
+                    </span>
+                  )}
+                </TableCell>
+                <TableCell className="hidden xl:table-cell">
+                  <div className="flex flex-wrap gap-1">
+                    {getBadges(record).map((badge, index) => (
+                      <span
+                        key={index}
+                        className="px-1 sm:px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium"
+                      >
+                        {badge}
+                      </span>
+                    ))}
+                  </div>
+                </TableCell>
+                <TableCell className="hidden xl:table-cell">
+                  <div className="max-w-[100px] text-xs text-gray-600 truncate" title={record.comments}>
+                    {record.comments || '-'}
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </div>
     </div>
   );
 };

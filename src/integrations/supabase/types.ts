@@ -119,6 +119,74 @@ export type Database = {
           },
         ]
       }
+      leave_requests: {
+        Row: {
+          approved_by: string | null
+          checked_out_at: string | null
+          created_at: string
+          departure_date: string
+          departure_time: string
+          destination: string
+          emergency_contact: string
+          id: string
+          reason: string
+          rejected_by: string | null
+          rejection_reason: string | null
+          return_date: string
+          return_time: string
+          returned_at: string | null
+          status: string
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          approved_by?: string | null
+          checked_out_at?: string | null
+          created_at?: string
+          departure_date: string
+          departure_time: string
+          destination: string
+          emergency_contact: string
+          id?: string
+          reason: string
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          return_date: string
+          return_time: string
+          returned_at?: string | null
+          status?: string
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          approved_by?: string | null
+          checked_out_at?: string | null
+          created_at?: string
+          departure_date?: string
+          departure_time?: string
+          destination?: string
+          emergency_contact?: string
+          id?: string
+          reason?: string
+          rejected_by?: string | null
+          rejection_reason?: string | null
+          return_date?: string
+          return_time?: string
+          returned_at?: string | null
+          status?: string
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leave_requests_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "student_users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       parent_users: {
         Row: {
           contact: string | null

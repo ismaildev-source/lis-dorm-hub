@@ -57,19 +57,19 @@ const AttendanceView = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       <AttendanceHeader
         userRole={user?.role || ''}
         userName={user?.name || ''}
         onLogout={handleLogout}
       />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-white rounded-lg shadow">
-          <div className="px-6 py-4 border-b border-gray-200">
+      <div className="w-full max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
+        <div className="bg-white rounded-lg shadow overflow-hidden">
+          <div className="px-3 sm:px-6 py-3 sm:py-4 border-b border-gray-200">
             <div className="flex items-center space-x-2">
-              <Eye className="w-6 h-6 text-purple-600" />
-              <h2 className="text-2xl font-bold text-gray-900">Attendance Records</h2>
+              <Eye className="w-5 h-5 sm:w-6 sm:h-6 text-purple-600" />
+              <h2 className="text-lg sm:text-2xl font-bold text-gray-900">Attendance Records</h2>
             </div>
           </div>
 
