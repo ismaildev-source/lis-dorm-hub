@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -7,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus, Download, Search, Eye, EyeOff } from 'lucide-react';
+import { Trash2, Edit3, Plus, Download, Search, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type GradeLevelType = 'Year 9' | 'Year 10' | 'Year 11' | 'Year 12' | 'Year 13';
@@ -238,7 +239,7 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ onUserCou
                 <Plus className="w-4 h-4 mr-2" /> Add Student
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl">
               <DialogHeader>
                 <DialogTitle>Add Student</DialogTitle>
               </DialogHeader>
@@ -441,11 +442,11 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ onUserCou
                   <TableCell>{student.email}</TableCell>
                   <TableCell>
                     <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => setEditingItem(student)}>
-                        <Edit className="w-4 h-4" />
+                      <Button size="sm" variant="outline" onClick={() => setEditingItem(student)} className="hover:bg-blue-50 hover:border-blue-300">
+                        <Edit3 className="w-4 h-4 text-blue-600" />
                       </Button>
-                      <Button size="sm" variant="destructive" onClick={() => handleDeleteUser(student.id)}>
-                        <Trash2 className="w-4 h-4" />
+                      <Button size="sm" variant="outline" onClick={() => handleDeleteUser(student.id)} className="hover:bg-red-50 hover:border-red-300">
+                        <Trash2 className="w-4 h-4 text-red-600" />
                       </Button>
                     </div>
                   </TableCell>
@@ -458,154 +459,166 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ onUserCou
         {/* Edit Dialog */}
         {editingItem && (
           <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Edit Student</DialogTitle>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label>Name</Label>
-                  <Input
-                    value={editingItem.name || ''}
-                    onChange={(e) => setEditingItem({...editingItem, name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Username</Label>
-                  <Input
-                    value={editingItem.username || ''}
-                    onChange={(e) => setEditingItem({...editingItem, username: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Age</Label>
-                  <Input
-                    type="number"
-                    value={editingItem.age || 16}
-                    onChange={(e) => setEditingItem({...editingItem, age: parseInt(e.target.value)})}
-                  />
-                </div>
-                <div>
-                  <Label>Grade Level</Label>
-                  <Select value={editingItem.grade_level} onValueChange={(value: GradeLevelType) => setEditingItem({...editingItem, grade_level: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Year 9">Year 9</SelectItem>
-                      <SelectItem value="Year 10">Year 10</SelectItem>
-                      <SelectItem value="Year 11">Year 11</SelectItem>
-                      <SelectItem value="Year 12">Year 12</SelectItem>
-                      <SelectItem value="Year 13">Year 13</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Date of Birth</Label>
-                  <Input
-                    type="date"
-                    value={editingItem.date_of_birth || ''}
-                    onChange={(e) => setEditingItem({...editingItem, date_of_birth: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Stream</Label>
-                  <Select value={editingItem.stream} onValueChange={(value: StreamType) => setEditingItem({...editingItem, stream: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A">A</SelectItem>
-                      <SelectItem value="B">B</SelectItem>
-                      <SelectItem value="C">C</SelectItem>
-                      <SelectItem value="D">D</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Room</Label>
-                  <Select value={editingItem.room} onValueChange={(value) => setEditingItem({...editingItem, room: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {studentRooms.map(room => (
-                        <SelectItem key={room} value={room}>{room}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Shoe Rack Number</Label>
-                  <Input
-                    value={editingItem.shoe_rack_number || ''}
-                    onChange={(e) => setEditingItem({...editingItem, shoe_rack_number: e.target.value})}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Label>Home Address</Label>
-                  <Input
-                    value={editingItem.home_address || ''}
-                    onChange={(e) => setEditingItem({...editingItem, home_address: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Email</Label>
-                  <Input
-                    type="email"
-                    value={editingItem.email || ''}
-                    onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Password</Label>
-                  <div className="relative">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl z-50">
+              <div className="absolute inset-0 bg-white rounded-lg" />
+              <div className="relative z-10">
+                <DialogHeader className="pb-4 border-b border-gray-200">
+                  <DialogTitle className="text-xl font-semibold text-gray-800">Edit Student</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-6">
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Name</Label>
                     <Input
-                      type={showEditPassword ? "text" : "password"}
-                      value={editingItem.password || ''}
-                      onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
-                      className="pr-10"
+                      value={editingItem.name || ''}
+                      onChange={(e) => setEditingItem({...editingItem, name: e.target.value})}
+                      className="mt-1"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowEditPassword(!showEditPassword)}
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
                   </div>
-                </div>
-                <div>
-                  <Label>Supervisor</Label>
-                  <Select value={editingItem.supervisor_id} onValueChange={(value) => setEditingItem({...editingItem, supervisor_id: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supervisors.map(supervisor => (
-                        <SelectItem key={supervisor.id} value={supervisor.id}>{supervisor.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label>Parent Name</Label>
-                  <Input
-                    value={editingItem.parent_name || ''}
-                    onChange={(e) => setEditingItem({...editingItem, parent_name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label>Parent Contact</Label>
-                  <Input
-                    value={editingItem.parent_contact || ''}
-                    onChange={(e) => setEditingItem({...editingItem, parent_contact: e.target.value})}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Button onClick={handleEditUser} className="w-full">
-                    Update Student
-                  </Button>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Username</Label>
+                    <Input
+                      value={editingItem.username || ''}
+                      onChange={(e) => setEditingItem({...editingItem, username: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Age</Label>
+                    <Input
+                      type="number"
+                      value={editingItem.age || 16}
+                      onChange={(e) => setEditingItem({...editingItem, age: parseInt(e.target.value)})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Grade Level</Label>
+                    <Select value={editingItem.grade_level} onValueChange={(value: GradeLevelType) => setEditingItem({...editingItem, grade_level: value})}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                        <SelectItem value="Year 9">Year 9</SelectItem>
+                        <SelectItem value="Year 10">Year 10</SelectItem>
+                        <SelectItem value="Year 11">Year 11</SelectItem>
+                        <SelectItem value="Year 12">Year 12</SelectItem>
+                        <SelectItem value="Year 13">Year 13</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Date of Birth</Label>
+                    <Input
+                      type="date"
+                      value={editingItem.date_of_birth || ''}
+                      onChange={(e) => setEditingItem({...editingItem, date_of_birth: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Stream</Label>
+                    <Select value={editingItem.stream} onValueChange={(value: StreamType) => setEditingItem({...editingItem, stream: value})}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                        <SelectItem value="A">A</SelectItem>
+                        <SelectItem value="B">B</SelectItem>
+                        <SelectItem value="C">C</SelectItem>
+                        <SelectItem value="D">D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Room</Label>
+                    <Select value={editingItem.room} onValueChange={(value) => setEditingItem({...editingItem, room: value})}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                        {studentRooms.map(room => (
+                          <SelectItem key={room} value={room}>{room}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Shoe Rack Number</Label>
+                    <Input
+                      value={editingItem.shoe_rack_number || ''}
+                      onChange={(e) => setEditingItem({...editingItem, shoe_rack_number: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="col-span-1 md:col-span-2">
+                    <Label className="text-sm font-medium text-gray-700">Home Address</Label>
+                    <Input
+                      value={editingItem.home_address || ''}
+                      onChange={(e) => setEditingItem({...editingItem, home_address: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Email</Label>
+                    <Input
+                      type="email"
+                      value={editingItem.email || ''}
+                      onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Password</Label>
+                    <div className="relative">
+                      <Input
+                        type={showEditPassword ? "text" : "password"}
+                        value={editingItem.password || ''}
+                        onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
+                        className="mt-1 pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowEditPassword(!showEditPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      >
+                        {showEditPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Supervisor</Label>
+                    <Select value={editingItem.supervisor_id} onValueChange={(value) => setEditingItem({...editingItem, supervisor_id: value})}>
+                      <SelectTrigger className="mt-1">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent className="bg-white border border-gray-200 shadow-lg">
+                        {supervisors.map(supervisor => (
+                          <SelectItem key={supervisor.id} value={supervisor.id}>{supervisor.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Parent Name</Label>
+                    <Input
+                      value={editingItem.parent_name || ''}
+                      onChange={(e) => setEditingItem({...editingItem, parent_name: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-sm font-medium text-gray-700">Parent Contact</Label>
+                    <Input
+                      value={editingItem.parent_contact || ''}
+                      onChange={(e) => setEditingItem({...editingItem, parent_contact: e.target.value})}
+                      className="mt-1"
+                    />
+                  </div>
+                  <div className="col-span-1 md:col-span-2 pt-4 border-t border-gray-200">
+                    <Button onClick={handleEditUser} className="w-full bg-blue-600 hover:bg-blue-700 text-white">
+                      Update Student
+                    </Button>
+                  </div>
                 </div>
               </div>
             </DialogContent>
