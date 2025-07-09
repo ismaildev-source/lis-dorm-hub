@@ -99,8 +99,8 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
               <TableHead className="font-bold text-gray-800 min-w-[70px] hidden md:table-cell">Grade</TableHead>
               <TableHead className="font-bold text-gray-800 min-w-[100px] hidden lg:table-cell">Supervisor</TableHead>
               <TableHead className="font-bold text-gray-800 min-w-[80px] hidden lg:table-cell">Notes</TableHead>
-              <TableHead className="font-bold text-gray-800 min-w-[80px] hidden xl:table-cell">Issues</TableHead>
-              <TableHead className="font-bold text-gray-800 min-w-[100px] hidden xl:table-cell">Comments</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[80px] hidden lg:table-cell">Issues</TableHead>
+              <TableHead className="font-bold text-gray-800 min-w-[200px]">Comments</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -143,7 +143,7 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
                     </span>
                   )}
                 </TableCell>
-                <TableCell className="hidden xl:table-cell">
+                <TableCell className="hidden lg:table-cell">
                   <div className="flex flex-wrap gap-1">
                     {getBadges(record).map((badge, index) => (
                       <span
@@ -155,8 +155,8 @@ const AttendanceTable = ({ records, loading }: AttendanceTableProps) => {
                     ))}
                   </div>
                 </TableCell>
-                <TableCell className="hidden xl:table-cell">
-                  <div className="max-w-[100px] text-xs text-gray-600 truncate" title={record.comments}>
+                <TableCell className="min-w-[200px] max-w-[300px]">
+                  <div className="text-xs text-gray-600 break-words whitespace-normal leading-relaxed">
                     {record.comments || '-'}
                   </div>
                 </TableCell>
