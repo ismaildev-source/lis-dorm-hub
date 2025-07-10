@@ -329,10 +329,21 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Admins</h2>
-              <Button onClick={() => printTable('admin-table', 'Admins')} variant="outline" size="sm" className="self-start sm:self-auto">
-                <Printer className="w-4 h-4 mr-2" />
-                Print
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={exportAttendanceToCSV} 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button onClick={() => printTable('admin-table', 'Admins')} variant="outline" size="sm" className="self-start sm:self-auto">
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print
+                </Button>
+              </div>
             </div>
             <div id="admin-table" className="w-full overflow-hidden">
               <AdminUserManagement onUserCountChange={fetchUserCounts} />
@@ -344,10 +355,21 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Supervisors</h2>
-              <Button onClick={() => printTable('supervisor-table', 'Supervisors')} variant="outline" size="sm" className="self-start sm:self-auto">
-                <Printer className="w-4 h-4 mr-2" />
-                Print
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={exportAttendanceToCSV} 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button onClick={() => printTable('supervisor-table', 'Supervisors')} variant="outline" size="sm" className="self-start sm:self-auto">
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print
+                </Button>
+              </div>
             </div>
             <div id="supervisor-table" className="w-full overflow-hidden">
               <SupervisorUserManagement onUserCountChange={fetchUserCounts} />
@@ -359,10 +381,21 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Students</h2>
-              <Button onClick={() => printTable('student-table', 'Students')} variant="outline" size="sm" className="self-start sm:self-auto">
-                <Printer className="w-4 h-4 mr-2" />
-                Print
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={exportAttendanceToCSV} 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button onClick={() => printTable('student-table', 'Students')} variant="outline" size="sm" className="self-start sm:self-auto">
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print
+                </Button>
+              </div>
             </div>
             <div id="student-table" className="w-full overflow-hidden">
               <StudentUserManagement onUserCountChange={fetchUserCounts} />
@@ -374,10 +407,21 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Parents</h2>
-              <Button onClick={() => printTable('parent-table', 'Parents')} variant="outline" size="sm" className="self-start sm:self-auto">
-                <Printer className="w-4 h-4 mr-2" />
-                Print
-              </Button>
+              <div className="flex gap-2">
+                <Button 
+                  onClick={exportAttendanceToCSV} 
+                  variant="outline" 
+                  size="sm"
+                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Export CSV
+                </Button>
+                <Button onClick={() => printTable('parent-table', 'Parents')} variant="outline" size="sm" className="self-start sm:self-auto">
+                  <Printer className="w-4 h-4 mr-2" />
+                  Print
+                </Button>
+              </div>
             </div>
             <div id="parent-table" className="w-full overflow-hidden">
               <ParentUserManagement onUserCountChange={fetchUserCounts} />
@@ -390,13 +434,13 @@ const AdminDashboard = () => {
             <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 gap-2 sm:gap-0">
               <CardTitle className="text-lg sm:text-xl font-bold text-gray-800">All Attendance Records</CardTitle>
               <div className="flex gap-2">
-                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm" className="shadow-sm text-xs sm:text-sm">
-                  <Printer className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                  Print
-                </Button>
                 <Button onClick={exportAttendanceToCSV} variant="outline" size="sm" className="shadow-sm text-xs sm:text-sm">
                   <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Export CSV
+                </Button>
+                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm" className="shadow-sm text-xs sm:text-sm">
+                  <Printer className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                  Print
                 </Button>
               </div>
             </CardHeader>

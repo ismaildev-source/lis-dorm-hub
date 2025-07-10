@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
@@ -104,15 +103,6 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
       <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
         <CardTitle className="text-xl font-semibold text-gray-800">Admins</CardTitle>
         <div className="flex gap-3">
-          <Button 
-            onClick={exportToCSV} 
-            variant="outline" 
-            size="sm"
-            className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
               <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
