@@ -183,6 +183,16 @@ const AdminDashboard = () => {
     { id: 'attendance', label: 'Attendance Records', icon: Calendar },
   ];
 
+  const handleLogout = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const confirmLogout = () => {
+    logout();
+    navigate('/');
+    setShowLogoutConfirm(false);
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
@@ -330,15 +340,6 @@ const AdminDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Admins</h2>
               <div className="flex gap-2">
-                <Button 
-                  onClick={exportAttendanceToCSV} 
-                  variant="outline" 
-                  size="sm"
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
                 <Button onClick={() => printTable('admin-table', 'Admins')} variant="outline" size="sm" className="self-start sm:self-auto">
                   <Printer className="w-4 h-4 mr-2" />
                   Print
@@ -356,15 +357,6 @@ const AdminDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Supervisors</h2>
               <div className="flex gap-2">
-                <Button 
-                  onClick={exportAttendanceToCSV} 
-                  variant="outline" 
-                  size="sm"
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
                 <Button onClick={() => printTable('supervisor-table', 'Supervisors')} variant="outline" size="sm" className="self-start sm:self-auto">
                   <Printer className="w-4 h-4 mr-2" />
                   Print
@@ -382,15 +374,6 @@ const AdminDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Students</h2>
               <div className="flex gap-2">
-                <Button 
-                  onClick={exportAttendanceToCSV} 
-                  variant="outline" 
-                  size="sm"
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
                 <Button onClick={() => printTable('student-table', 'Students')} variant="outline" size="sm" className="self-start sm:self-auto">
                   <Printer className="w-4 h-4 mr-2" />
                   Print
@@ -408,15 +391,6 @@ const AdminDashboard = () => {
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Parents</h2>
               <div className="flex gap-2">
-                <Button 
-                  onClick={exportAttendanceToCSV} 
-                  variant="outline" 
-                  size="sm"
-                  className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  Export CSV
-                </Button>
                 <Button onClick={() => printTable('parent-table', 'Parents')} variant="outline" size="sm" className="self-start sm:self-auto">
                   <Printer className="w-4 h-4 mr-2" />
                   Print
