@@ -190,7 +190,7 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({ onU
   return (
     <Card className="bg-white border-gray-100 rounded-xl shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
-        <CardTitle className="text-xl font-semibold text-gray-800">Supervisor Users</CardTitle>
+        <CardTitle className="text-xl font-semibold text-gray-800">Supervisors</CardTitle>
         <div className="flex gap-3">
           <Button 
             onClick={exportToCSV} 

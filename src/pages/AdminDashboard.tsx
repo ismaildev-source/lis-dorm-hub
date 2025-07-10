@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Users, UserPlus, Shield, GraduationCap, User, Calendar, Download, Eye, Printer } from 'lucide-react';
@@ -177,7 +176,7 @@ const AdminDashboard = () => {
 
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Shield },
-    { id: 'admins', label: 'Admin Users', icon: Shield },
+    { id: 'admins', label: 'Admins', icon: Shield },
     { id: 'supervisors', label: 'Supervisors', icon: Users },
     { id: 'students', label: 'Students', icon: GraduationCap },
     { id: 'parents', label: 'Parents', icon: User },
@@ -193,7 +192,7 @@ const AdminDashboard = () => {
             <div className="flex items-center min-w-0">
               <h1 className="text-lg sm:text-2xl font-bold text-blue-600 truncate">LIS Dorm Karen Admin</h1>
             </div>
-            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+            <div className="flex items-center justify-center space-x-2 sm:space-x-4 flex-shrink-0">
               <span className="text-xs sm:text-sm text-gray-700 hidden sm:block">Welcome, {user?.name}</span>
               <span className="text-xs text-gray-700 sm:hidden">Hi, {user?.name?.split(' ')[0]}</span>
               <Button
@@ -329,8 +328,8 @@ const AdminDashboard = () => {
         {activeTab === 'admins' && (
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
-              <h2 className="text-xl sm:text-2xl font-bold">Admin Users</h2>
-              <Button onClick={() => printTable('admin-table', 'Admin Users')} variant="outline" size="sm" className="self-start sm:self-auto">
+              <h2 className="text-xl sm:text-2xl font-bold">Admins</h2>
+              <Button onClick={() => printTable('admin-table', 'Admins')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -345,7 +344,7 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Supervisors</h2>
-              <Button onClick={() => printTable('supervisor-table', 'Supervisor Users')} variant="outline" size="sm" className="self-start sm:self-auto">
+              <Button onClick={() => printTable('supervisor-table', 'Supervisors')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -360,7 +359,7 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Students</h2>
-              <Button onClick={() => printTable('student-table', 'Student Users')} variant="outline" size="sm" className="self-start sm:self-auto">
+              <Button onClick={() => printTable('student-table', 'Students')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -375,7 +374,7 @@ const AdminDashboard = () => {
           <div className="space-y-4 sm:space-y-6">
             <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
               <h2 className="text-xl sm:text-2xl font-bold">Parents</h2>
-              <Button onClick={() => printTable('parent-table', 'Parent Users')} variant="outline" size="sm" className="self-start sm:self-auto">
+              <Button onClick={() => printTable('parent-table', 'Parents')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
@@ -486,7 +485,7 @@ const AdminDashboard = () => {
       {/* Supervisor Students View Modal */}
       {selectedSupervisor && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+          <div className="bg-white rounded-lg max-w-6xl w-full max-h-[90vh] overflow-y-auto">
             <SupervisorStudentsView
               supervisorId={selectedSupervisor.id}
               supervisorName={selectedSupervisor.name}

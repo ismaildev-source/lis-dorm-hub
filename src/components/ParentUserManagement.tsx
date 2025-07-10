@@ -191,7 +191,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
   return (
     <Card className="bg-white border-gray-100 rounded-xl shadow-sm">
       <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
-        <CardTitle className="text-xl font-semibold text-gray-800">Parent Users</CardTitle>
+        <CardTitle className="text-xl font-semibold text-gray-800">Parents</CardTitle>
         <div className="flex gap-3">
           <div className="flex gap-3 print:hidden">
             <Input
@@ -216,19 +216,19 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                 <Plus className="w-4 h-4 mr-2" /> Add Parent
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
+            <DialogContent className="max-w-md w-[95vw] max-h-[95vh] overflow-y-auto bg-white border-gray-100 rounded-xl shadow-lg">
               <DialogHeader className="pb-4">
-                <DialogTitle className="text-xl font-semibold text-gray-800">Add Parent User</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-800">Add Parent</DialogTitle>
               </DialogHeader>
-              <div className="bg-white p-6 rounded-lg">
-                <div className="space-y-6">
+              <div className="bg-white p-4 sm:p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6">
                   <div>
                     <Label htmlFor="parent-name" className="text-sm font-medium text-gray-700 mb-2 block">Name</Label>
                     <Input
                       id="parent-name"
                       value={parentForm.name}
                       onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
@@ -237,13 +237,13 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                       id="parent-username"
                       value={parentForm.username}
                       onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
                     <Label htmlFor="parent-gender" className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
                     <Select value={parentForm.gender} onValueChange={(value: GenderType) => setParentForm({...parentForm, gender: value})}>
-                      <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                      <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
@@ -255,7 +255,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                   <div>
                     <Label htmlFor="parent-student" className="text-sm font-medium text-gray-700 mb-2 block">Student</Label>
                     <Select value={parentForm.student_id} onValueChange={(value) => setParentForm({...parentForm, student_id: value})}>
-                      <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                      <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
@@ -271,7 +271,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                       id="parent-contact"
                       value={parentForm.contact}
                       onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
@@ -281,7 +281,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                       type="email"
                       value={parentForm.email}
                       onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
@@ -292,7 +292,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                         type={showPassword ? "text" : "password"}
                         value={parentForm.password}
                         onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
-                        className="h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                        className="h-10 sm:h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                       />
                       <button
                         type="button"
@@ -305,7 +305,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                   </div>
                   <Button 
                     onClick={handleAddUser} 
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                    className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
                   >
                     Add Parent
                   </Button>
@@ -363,18 +363,18 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
         {/* Edit Dialog */}
         {editingItem && (
           <Dialog open={!!editingItem} onOpenChange={() => setEditingItem(null)}>
-            <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
+            <DialogContent className="max-w-md w-[95vw] max-h-[95vh] overflow-y-auto bg-white border-gray-100 rounded-xl shadow-lg">
               <DialogHeader className="pb-4">
-                <DialogTitle className="text-xl font-semibold text-gray-800">Edit Parent User</DialogTitle>
+                <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-800">Edit Parent</DialogTitle>
               </DialogHeader>
-              <div className="bg-white p-6 rounded-lg">
-                <div className="space-y-6">
+              <div className="bg-white p-4 sm:p-6 rounded-lg">
+                <div className="space-y-4 sm:space-y-6">
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-2 block">Name</Label>
                     <Input
                       value={editingItem.name || ''}
                       onChange={(e) => setEditingItem({...editingItem, name: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
@@ -382,13 +382,13 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                     <Input
                       value={editingItem.username || ''}
                       onChange={(e) => setEditingItem({...editingItem, username: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
                     <Select value={editingItem.gender} onValueChange={(value: GenderType) => setEditingItem({...editingItem, gender: value})}>
-                      <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                      <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
@@ -402,7 +402,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                     <Input
                       value={editingItem.contact || ''}
                       onChange={(e) => setEditingItem({...editingItem, contact: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
@@ -410,7 +410,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                     <Input
                       value={editingItem.email || ''}
                       onChange={(e) => setEditingItem({...editingItem, email: e.target.value})}
-                      className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                     />
                   </div>
                   <div>
@@ -420,7 +420,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                         type={showEditPassword ? "text" : "password"}
                         value={editingItem.password || ''}
                         onChange={(e) => setEditingItem({...editingItem, password: e.target.value})}
-                        className="h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                        className="h-10 sm:h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                       />
                       <button
                         type="button"
@@ -434,7 +434,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                   <div>
                     <Label className="text-sm font-medium text-gray-700 mb-2 block">Student</Label>
                     <Select value={editingItem.student_id} onValueChange={(value) => setEditingItem({...editingItem, student_id: value})}>
-                      <SelectTrigger className="h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                      <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
@@ -446,9 +446,9 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
                   </div>
                   <Button 
                     onClick={handleEditUser} 
-                    className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                    className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
                   >
-                    Update Parent User
+                    Update Parent
                   </Button>
                 </div>
               </div>

@@ -85,17 +85,54 @@ const SupervisorStudentsView = ({ supervisorId, supervisorName, onClose }: Super
             <p className="text-sm sm:text-base text-gray-500">This supervisor has no students assigned yet.</p>
           </div>
         ) : (
-          <div className="w-full overflow-hidden">
-            <div className="overflow-x-auto">
+          <div className="w-full">
+            {/* Mobile Card View */}
+            <div className="block sm:hidden p-4 space-y-4">
+              {students.map((student) => (
+                <div key={student.id} className="bg-gradient-to-r from-white to-gray-50 p-4 rounded-xl shadow-md border border-gray-100">
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-bold text-blue-900 text-base">{student.name}</h4>
+                      <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-medium">
+                        {student.grade_level}
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <span className="text-xs text-gray-500 block">Stream</span>
+                        <span className="bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-medium">
+                          {student.stream}
+                        </span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500 block">Room</span>
+                        <span className="text-sm font-medium text-gray-700">{student.room}</span>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500 block">Age</span>
+                        <span className="text-sm font-medium text-gray-700">{student.age}</span>
+                      </div>
+                    </div>
+                    <div>
+                      <span className="text-xs text-gray-500 block">Email</span>
+                      <span className="text-sm text-gray-700 break-all">{student.email}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* Desktop Table View */}
+            <div className="hidden sm:block overflow-x-auto">
               <Table>
                 <TableHeader>
                   <TableRow>
                     <TableHead className="font-bold text-gray-800 min-w-[120px] text-xs sm:text-sm">Name</TableHead>
-                    <TableHead className="font-bold text-gray-800 min-w-[80px] hidden sm:table-cell text-xs sm:text-sm">Grade</TableHead>
-                    <TableHead className="font-bold text-gray-800 min-w-[80px] hidden md:table-cell text-xs sm:text-sm">Stream</TableHead>
-                    <TableHead className="font-bold text-gray-800 min-w-[80px] hidden lg:table-cell text-xs sm:text-sm">Room</TableHead>
-                    <TableHead className="font-bold text-gray-800 min-w-[60px] hidden xl:table-cell text-xs sm:text-sm">Age</TableHead>
-                    <TableHead className="font-bold text-gray-800 min-w-[150px] hidden xl:table-cell text-xs sm:text-sm">Email</TableHead>
+                    <TableHead className="font-bold text-gray-800 min-w-[80px] text-xs sm:text-sm">Grade</TableHead>
+                    <TableHead className="font-bold text-gray-800 min-w-[80px] text-xs sm:text-sm">Stream</TableHead>
+                    <TableHead className="font-bold text-gray-800 min-w-[80px] text-xs sm:text-sm">Room</TableHead>
+                    <TableHead className="font-bold text-gray-800 min-w-[60px] text-xs sm:text-sm">Age</TableHead>
+                    <TableHead className="font-bold text-gray-800 min-w-[150px] text-xs sm:text-sm">Email</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
@@ -106,19 +143,19 @@ const SupervisorStudentsView = ({ supervisorId, supervisorName, onClose }: Super
                           {student.name}
                         </div>
                       </TableCell>
-                      <TableCell className="hidden sm:table-cell">
+                      <TableCell>
                         <span className="bg-blue-100 text-blue-800 px-1 sm:px-2 py-1 rounded-full text-xs font-medium">
                           {student.grade_level}
                         </span>
                       </TableCell>
-                      <TableCell className="hidden md:table-cell">
+                      <TableCell>
                         <span className="bg-green-100 text-green-800 px-1 sm:px-2 py-1 rounded-full text-xs font-medium">
                           {student.stream}
                         </span>
                       </TableCell>
-                      <TableCell className="text-gray-700 hidden lg:table-cell text-xs sm:text-sm">{student.room}</TableCell>
-                      <TableCell className="text-gray-700 hidden xl:table-cell text-xs sm:text-sm">{student.age}</TableCell>
-                      <TableCell className="text-gray-700 hidden xl:table-cell text-xs sm:text-sm">
+                      <TableCell className="text-gray-700 text-xs sm:text-sm">{student.room}</TableCell>
+                      <TableCell className="text-gray-700 text-xs sm:text-sm">{student.age}</TableCell>
+                      <TableCell className="text-gray-700 text-xs sm:text-sm">
                         <div className="truncate max-w-[150px]">
                           {student.email}
                         </div>
