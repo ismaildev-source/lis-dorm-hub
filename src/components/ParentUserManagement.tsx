@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { Trash2, Edit, Plus, Eye, EyeOff, Download } from 'lucide-react';
+import { Trash2, Edit, Plus, Eye, EyeOff } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 
 type GenderType = 'Male' | 'Female';
@@ -200,15 +200,6 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-64 h-10 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
             />
-            <Button 
-              onClick={exportToCSV} 
-              variant="outline" 
-              size="sm"
-              className="border-gray-200 text-gray-700 hover:bg-gray-50 rounded-lg"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Export CSV
-            </Button>
           </div>
           <Dialog open={openDialog} onOpenChange={setOpenDialog}>
             <DialogTrigger asChild>
@@ -316,49 +307,51 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
         </div>
       </CardHeader>
       <CardContent className="p-6">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Username</TableHead>
-              <TableHead>Gender</TableHead>
-              <TableHead>Contact</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filteredUsers.map((parent) => (
-              <TableRow key={parent.id}>
-                <TableCell className="font-medium">{parent.name}</TableCell>
-                <TableCell>{parent.username}</TableCell>
-                <TableCell>{parent.gender}</TableCell>
-                <TableCell>{parent.contact}</TableCell>
-                <TableCell>{parent.email}</TableCell>
-                <TableCell>
-                  <div className="flex gap-2">
-                    <Button 
-                      size="sm" 
-                      variant="outline" 
-                      onClick={() => setEditingItem(parent)}
-                      className="h-8 px-3 border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md"
-                    >
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                    <Button 
-                      size="sm" 
-                      variant="destructive" 
-                      onClick={() => handleDeleteUser(parent.id)}
-                      className="h-8 px-3 bg-red-500 hover:bg-red-600 text-white rounded-md"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </Button>
-                  </div>
-                </TableCell>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead className="min-w-[120px]">Name</TableHead>
+                <TableHead className="min-w-[100px]">Username</TableHead>
+                <TableHead className="min-w-[80px]">Gender</TableHead>
+                <TableHead className="min-w-[120px]">Contact</TableHead>
+                <TableHead className="min-w-[150px]">Email</TableHead>
+                <TableHead className="min-w-[120px]">Actions</TableHead>
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+            </TableHeader>
+            <TableBody>
+              {filteredUsers.map((parent) => (
+                <TableRow key={parent.id}>
+                  <TableCell className="font-medium">{parent.name}</TableCell>
+                  <TableCell>{parent.username}</TableCell>
+                  <TableCell>{parent.gender}</TableCell>
+                  <TableCell>{parent.contact}</TableCell>
+                  <TableCell>{parent.email}</TableCell>
+                  <TableCell>
+                    <div className="flex gap-2">
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => setEditingItem(parent)}
+                        className="h-8 px-3 border-gray-200 text-gray-700 hover:bg-gray-50 rounded-md"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button 
+                        size="sm" 
+                        variant="destructive" 
+                        onClick={() => handleDeleteUser(parent.id)}
+                        className="h-8 px-3 bg-red-500 hover:bg-red-600 text-white rounded-md"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
 
         {/* Edit Dialog */}
         {editingItem && (
