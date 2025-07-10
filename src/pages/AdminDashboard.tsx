@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Users, UserPlus, Shield, GraduationCap, User, Calendar, Download, Eye, Printer } from 'lucide-react';
@@ -187,45 +188,46 @@ const AdminDashboard = () => {
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       {/* Header */}
       <header className="bg-white shadow-lg">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center">
-              <h1 className="text-2xl font-bold text-blue-600">LIS Dorm Karen Admin</h1>
+        <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8">
+          <div className="flex justify-between items-center h-14 sm:h-16">
+            <div className="flex items-center min-w-0">
+              <h1 className="text-lg sm:text-2xl font-bold text-blue-600 truncate">LIS Dorm Karen Admin</h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <span className="text-gray-700">Welcome, {user?.name}</span>
+            <div className="flex items-center space-x-2 sm:space-x-4 flex-shrink-0">
+              <span className="text-xs sm:text-sm text-gray-700 hidden sm:block">Welcome, {user?.name}</span>
+              <span className="text-xs text-gray-700 sm:hidden">Hi, {user?.name?.split(' ')[0]}</span>
               <Button
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-2 shadow-sm"
+                className="flex items-center space-x-1 sm:space-x-2 shadow-sm text-xs sm:text-sm px-2 sm:px-3"
               >
-                <LogOut size={16} />
-                <span>Logout</span>
+                <LogOut size={14} className="sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Logout</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="max-w-7xl mx-auto px-2 sm:px-4 lg:px-8 py-4 sm:py-8">
         {/* Navigation Tabs */}
-        <div className="bg-white rounded-xl shadow-lg mb-8 p-1">
-          <nav className="flex space-x-1">
+        <div className="bg-white rounded-xl shadow-lg mb-4 sm:mb-8 p-1">
+          <nav className="flex flex-wrap gap-1">
             {tabs.map((tab) => {
               const IconComponent = tab.icon;
               return (
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
-                  className={`flex items-center space-x-2 py-3 px-4 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  className={`flex items-center space-x-1 sm:space-x-2 py-2 sm:py-3 px-2 sm:px-4 rounded-lg font-medium text-xs sm:text-sm transition-all duration-200 flex-1 sm:flex-none min-w-0 ${
                     activeTab === tab.id
                       ? 'bg-blue-500 text-white shadow-md'
                       : 'text-gray-600 hover:text-gray-800 hover:bg-gray-50'
                   }`}
                 >
-                  <IconComponent size={20} />
-                  <span>{tab.label}</span>
+                  <IconComponent size={16} className="sm:w-5 sm:h-5 flex-shrink-0" />
+                  <span className="truncate">{tab.label}</span>
                 </button>
               );
             })}
@@ -325,60 +327,60 @@ const AdminDashboard = () => {
         )}
 
         {activeTab === 'admins' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Admin Users</h2>
-              <Button onClick={() => printTable('admin-table', 'Admin Users')} variant="outline" size="sm">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Admin Users</h2>
+              <Button onClick={() => printTable('admin-table', 'Admin Users')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
             </div>
-            <div id="admin-table">
+            <div id="admin-table" className="w-full overflow-hidden">
               <AdminUserManagement onUserCountChange={fetchUserCounts} />
             </div>
           </div>
         )}
         
         {activeTab === 'supervisors' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Supervisors</h2>
-              <Button onClick={() => printTable('supervisor-table', 'Supervisor Users')} variant="outline" size="sm">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Supervisors</h2>
+              <Button onClick={() => printTable('supervisor-table', 'Supervisor Users')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
             </div>
-            <div id="supervisor-table">
+            <div id="supervisor-table" className="w-full overflow-hidden">
               <SupervisorUserManagement onUserCountChange={fetchUserCounts} />
             </div>
           </div>
         )}
         
         {activeTab === 'students' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Students</h2>
-              <Button onClick={() => printTable('student-table', 'Student Users')} variant="outline" size="sm">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Students</h2>
+              <Button onClick={() => printTable('student-table', 'Student Users')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
             </div>
-            <div id="student-table">
+            <div id="student-table" className="w-full overflow-hidden">
               <StudentUserManagement onUserCountChange={fetchUserCounts} />
             </div>
           </div>
         )}
         
         {activeTab === 'parents' && (
-          <div>
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold">Parents</h2>
-              <Button onClick={() => printTable('parent-table', 'Parent Users')} variant="outline" size="sm">
+          <div className="space-y-4 sm:space-y-6">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 sm:gap-0 mb-4 sm:mb-6">
+              <h2 className="text-xl sm:text-2xl font-bold">Parents</h2>
+              <Button onClick={() => printTable('parent-table', 'Parent Users')} variant="outline" size="sm" className="self-start sm:self-auto">
                 <Printer className="w-4 h-4 mr-2" />
                 Print
               </Button>
             </div>
-            <div id="parent-table">
+            <div id="parent-table" className="w-full overflow-hidden">
               <ParentUserManagement onUserCountChange={fetchUserCounts} />
             </div>
           </div>
@@ -386,78 +388,88 @@ const AdminDashboard = () => {
         
         {activeTab === 'attendance' && (
           <Card className="bg-white shadow-lg rounded-xl overflow-hidden">
-            <CardHeader className="flex flex-row items-center justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
-              <CardTitle className="text-xl font-bold text-gray-800">All Attendance Records</CardTitle>
+            <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between bg-gradient-to-r from-blue-50 to-indigo-50 p-4 sm:p-6 gap-2 sm:gap-0">
+              <CardTitle className="text-lg sm:text-xl font-bold text-gray-800">All Attendance Records</CardTitle>
               <div className="flex gap-2">
-                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm" className="shadow-sm">
-                  <Printer className="w-4 h-4 mr-2" />
+                <Button onClick={() => printTable('attendance-table', 'Attendance Records')} variant="outline" size="sm" className="shadow-sm text-xs sm:text-sm">
+                  <Printer className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Print
                 </Button>
-                <Button onClick={exportAttendanceToCSV} variant="outline" size="sm" className="shadow-sm">
-                  <Download className="w-4 h-4 mr-2" />
+                <Button onClick={exportAttendanceToCSV} variant="outline" size="sm" className="shadow-sm text-xs sm:text-sm">
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Export CSV
                 </Button>
               </div>
             </CardHeader>
             <CardContent className="p-0">
-              <div id="attendance-table" className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="font-bold text-gray-800">Date</TableHead>
-                      <TableHead className="font-bold text-gray-800">Student</TableHead>
-                      <TableHead className="font-bold text-gray-800">Status</TableHead>
-                      <TableHead className="font-bold text-gray-800">Study Type</TableHead>
-                      <TableHead className="font-bold text-gray-800">Grade</TableHead>
-                      <TableHead className="font-bold text-gray-800">Supervisor</TableHead>
-                      <TableHead className="font-bold text-gray-800">Behavioral Issues</TableHead>
-                      <TableHead className="font-bold text-gray-800 min-w-[200px]">Comments</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {attendanceRecords.map((record) => (
-                      <TableRow key={record.id}>
-                        <TableCell className="font-medium">{new Date(record.date).toLocaleDateString()}</TableCell>
-                        <TableCell className="font-semibold text-blue-900">{record.student_users?.name || 'N/A'}</TableCell>
-                        <TableCell>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${
-                            record.attendance_status === 'Present' 
-                              ? 'bg-green-100 text-green-800' 
-                              : 'bg-red-100 text-red-800'
-                          }`}>
-                            {record.attendance_status}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-sm">
-                            {record.study_types && record.study_types.length > 0 
-                              ? record.study_types.join(', ') 
-                              : record.study_type}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
-                            {record.grade_level}
-                          </span>
-                        </TableCell>
-                        <TableCell className="text-gray-700">{record.supervisor_users?.name || 'N/A'}</TableCell>
-                        <TableCell>
-                          <div className="flex flex-wrap gap-1">
-                            {record.is_late && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Late</span>}
-                            {record.is_noise && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Noise</span>}
-                            {record.is_leave_early && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Left Early</span>}
-                            {record.is_doing_nothing && <span className="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Inactive</span>}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="max-w-xs break-words text-sm" title={record.comments}>
-                            {record.comments || 'No comments'}
-                          </div>
-                        </TableCell>
+              <div id="attendance-table" className="w-full overflow-hidden">
+                <div className="overflow-x-auto">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead className="font-bold text-gray-800 min-w-[80px] text-xs sm:text-sm">Date</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[100px] text-xs sm:text-sm">Student</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[80px] text-xs sm:text-sm">Status</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[120px] hidden sm:table-cell text-xs sm:text-sm">Study Type</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[70px] hidden md:table-cell text-xs sm:text-sm">Grade</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[100px] hidden lg:table-cell text-xs sm:text-sm">Supervisor</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[80px] hidden lg:table-cell text-xs sm:text-sm">Issues</TableHead>
+                        <TableHead className="font-bold text-gray-800 min-w-[150px] text-xs sm:text-sm">Comments</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
+                    </TableHeader>
+                    <TableBody>
+                      {attendanceRecords.map((record) => (
+                        <TableRow key={record.id}>
+                          <TableCell className="font-medium text-xs sm:text-sm">{new Date(record.date).toLocaleDateString()}</TableCell>
+                          <TableCell className="font-semibold text-blue-900 text-xs sm:text-sm">
+                            <div className="truncate max-w-[100px] sm:max-w-none">
+                              {record.student_users?.name || 'N/A'}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <span className={`px-2 sm:px-3 py-1 rounded-full text-xs font-medium ${
+                              record.attendance_status === 'Present' 
+                                ? 'bg-green-100 text-green-800' 
+                                : 'bg-red-100 text-red-800'
+                            }`}>
+                              {record.attendance_status}
+                            </span>
+                          </TableCell>
+                          <TableCell className="hidden sm:table-cell text-xs sm:text-sm">
+                            <div className="max-w-[120px] truncate">
+                              {record.study_types && record.study_types.length > 0 
+                                ? record.study_types.join(', ') 
+                                : record.study_type}
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden md:table-cell">
+                            <span className="bg-blue-100 text-blue-800 px-1 sm:px-2 py-1 rounded-full text-xs font-medium">
+                              {record.grade_level}
+                            </span>
+                          </TableCell>
+                          <TableCell className="text-gray-700 hidden lg:table-cell text-xs sm:text-sm">
+                            <div className="truncate max-w-[100px]">
+                              {record.supervisor_users?.name || 'N/A'}
+                            </div>
+                          </TableCell>
+                          <TableCell className="hidden lg:table-cell">
+                            <div className="flex flex-wrap gap-1">
+                              {record.is_late && <span className="px-1 sm:px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Late</span>}
+                              {record.is_noise && <span className="px-1 sm:px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Noise</span>}
+                              {record.is_leave_early && <span className="px-1 sm:px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Left Early</span>}
+                              {record.is_doing_nothing && <span className="px-1 sm:px-2 py-1 bg-yellow-100 text-yellow-800 text-xs rounded-full font-medium">Inactive</span>}
+                            </div>
+                          </TableCell>
+                          <TableCell className="min-w-[150px] max-w-[200px]">
+                            <div className="text-xs text-gray-600 break-words whitespace-normal leading-relaxed">
+                              {record.comments || 'No comments'}
+                            </div>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
               </div>
             </CardContent>
           </Card>
