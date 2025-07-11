@@ -1,11 +1,11 @@
 
 import React from 'react';
-import { Shield, Users, GraduationCap, User, Calendar } from 'lucide-react';
+import { Shield, Users, GraduationCap, User, Calendar, LucideProps } from 'lucide-react';
 
 export interface Tab {
   id: string;
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: React.ComponentType<LucideProps>;
 }
 
 interface AdminNavigationTabsProps {
