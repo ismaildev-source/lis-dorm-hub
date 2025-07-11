@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -214,12 +213,12 @@ const SupervisorUserManagement: React.FC<SupervisorUserManagementProps> = ({
       {renderCustomHeader && renderCustomHeader(exportToCSV)}
 
       <CardContent className="p-6">
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex justify-between items-center gap-4">
           <SupervisorUserSearch 
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
-          {showHeaderControls && (
+          {!showHeaderControls && (
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
               <DialogTrigger asChild>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">

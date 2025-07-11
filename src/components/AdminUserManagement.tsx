@@ -135,12 +135,12 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({
       {renderCustomHeader && renderCustomHeader(exportToCSV)}
       
       <CardContent className="p-6">
-        <div className="mb-6 flex justify-between items-center">
+        <div className="mb-6 flex justify-between items-center gap-4">
           <AdminUserSearch
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
-          {showHeaderControls && (
+          {!showHeaderControls && (
             <Dialog open={openDialog} onOpenChange={setOpenDialog}>
               <DialogTrigger asChild>
                 <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
