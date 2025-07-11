@@ -25,9 +25,15 @@ interface ParentUser {
 
 interface ParentUserManagementProps {
   onUserCountChange: () => void;
+  showHeaderControls?: boolean;
+  renderCustomHeader?: (onExportCSV: () => void) => React.ReactNode;
 }
 
-const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCountChange }) => {
+const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ 
+  onUserCountChange,
+  showHeaderControls = true,
+  renderCustomHeader 
+}) => {
   const { toast } = useToast();
   const [parentUsers, setParentUsers] = useState<ParentUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<ParentUser[]>([]);
@@ -190,123 +196,242 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({ onUserCount
 
   return (
     <Card className="bg-white border-gray-100 rounded-xl shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
-        <CardTitle className="text-xl font-semibold text-gray-800">Parents</CardTitle>
-        <div className="flex gap-3">
-          <div className="flex gap-3 print:hidden">
-            <Input
-              placeholder="Search parent users..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-64 h-10 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-            />
-          </div>
-          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
-                <Plus className="w-4 h-4 mr-2" /> Add Parent
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md w-[95vw] max-h-[95vh] overflow-y-auto bg-white border-gray-100 rounded-xl shadow-lg">
-              <DialogHeader className="pb-4">
-                <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-800">Add Parent</DialogTitle>
-              </DialogHeader>
-              <div className="bg-white p-4 sm:p-6 rounded-lg">
-                <div className="space-y-4 sm:space-y-6">
-                  <div>
-                    <Label htmlFor="parent-name" className="text-sm font-medium text-gray-700 mb-2 block">Name</Label>
-                    <Input
-                      id="parent-name"
-                      value={parentForm.name}
-                      onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
-                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="parent-username" className="text-sm font-medium text-gray-700 mb-2 block">Username</Label>
-                    <Input
-                      id="parent-username"
-                      value={parentForm.username}
-                      onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
-                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="parent-gender" className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
-                    <Select value={parentForm.gender} onValueChange={(value: GenderType) => setParentForm({...parentForm, gender: value})}>
-                      <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
-                        <SelectItem value="Male" className="hover:bg-blue-50">Male</SelectItem>
-                        <SelectItem value="Female" className="hover:bg-blue-50">Female</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="parent-student" className="text-sm font-medium text-gray-700 mb-2 block">Student</Label>
-                    <Select value={parentForm.student_id} onValueChange={(value) => setParentForm({...parentForm, student_id: value})}>
-                      <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
-                        {students.map(student => (
-                          <SelectItem key={student.id} value={student.id} className="hover:bg-blue-50">{student.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div>
-                    <Label htmlFor="parent-contact" className="text-sm font-medium text-gray-700 mb-2 block">Contact</Label>
-                    <Input
-                      id="parent-contact"
-                      value={parentForm.contact}
-                      onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
-                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="parent-email" className="text-sm font-medium text-gray-700 mb-2 block">Email</Label>
-                    <Input
-                      id="parent-email"
-                      type="email"
-                      value={parentForm.email}
-                      onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
-                      className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="parent-password" className="text-sm font-medium text-gray-700 mb-2 block">Password</Label>
-                    <div className="relative">
+      {showHeaderControls && (
+        <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
+          <CardTitle className="text-xl font-semibold text-gray-800">Parents</CardTitle>
+          <div className="flex gap-3">
+            <div className="flex gap-3 print:hidden">
+              <Input
+                placeholder="Search parent users..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-64 h-10 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+              />
+            </div>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
+                  <Plus className="w-4 h-4 mr-2" /> Add Parent
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md w-[95vw] max-h-[95vh] overflow-y-auto bg-white border-gray-100 rounded-xl shadow-lg">
+                <DialogHeader className="pb-4">
+                  <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-800">Add Parent</DialogTitle>
+                </DialogHeader>
+                <div className="bg-white p-4 sm:p-6 rounded-lg">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div>
+                      <Label htmlFor="parent-name" className="text-sm font-medium text-gray-700 mb-2 block">Name</Label>
                       <Input
-                        id="parent-password"
-                        type={showPassword ? "text" : "password"}
-                        value={parentForm.password}
-                        onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
-                        className="h-10 sm:h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                        id="parent-name"
+                        value={parentForm.name}
+                        onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600"
-                      >
-                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                      </button>
                     </div>
+                    <div>
+                      <Label htmlFor="parent-username" className="text-sm font-medium text-gray-700 mb-2 block">Username</Label>
+                      <Input
+                        id="parent-username"
+                        value={parentForm.username}
+                        onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-gender" className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
+                      <Select value={parentForm.gender} onValueChange={(value: GenderType) => setParentForm({...parentForm, gender: value})}>
+                        <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
+                          <SelectItem value="Male" className="hover:bg-blue-50">Male</SelectItem>
+                          <SelectItem value="Female" className="hover:bg-blue-50">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-student" className="text-sm font-medium text-gray-700 mb-2 block">Student</Label>
+                      <Select value={parentForm.student_id} onValueChange={(value) => setParentForm({...parentForm, student_id: value})}>
+                        <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
+                          {students.map(student => (
+                            <SelectItem key={student.id} value={student.id} className="hover:bg-blue-50">{student.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-contact" className="text-sm font-medium text-gray-700 mb-2 block">Contact</Label>
+                      <Input
+                        id="parent-contact"
+                        value={parentForm.contact}
+                        onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-email" className="text-sm font-medium text-gray-700 mb-2 block">Email</Label>
+                      <Input
+                        id="parent-email"
+                        type="email"
+                        value={parentForm.email}
+                        onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-password" className="text-sm font-medium text-gray-700 mb-2 block">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="parent-password"
+                          type={showPassword ? "text" : "password"}
+                          value={parentForm.password}
+                          onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
+                          className="h-10 sm:h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={handleAddUser} 
+                      className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                    >
+                      Add Parent
+                    </Button>
                   </div>
-                  <Button 
-                    onClick={handleAddUser} 
-                    className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
-                  >
-                    Add Parent
-                  </Button>
                 </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+      )}
+
+      {renderCustomHeader && renderCustomHeader(exportToCSV)}
+      
       <CardContent className="p-6">
+        <div className="mb-6 flex justify-between items-center">
+          <Input
+            placeholder="Search parent users..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="w-64 h-10 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+          />
+          {showHeaderControls && (
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
+                  <Plus className="w-4 h-4 mr-2" /> Add Parent
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md w-[95vw] max-h-[95vh] overflow-y-auto bg-white border-gray-100 rounded-xl shadow-lg">
+                <DialogHeader className="pb-4">
+                  <DialogTitle className="text-lg sm:text-xl font-semibold text-gray-800">Add Parent</DialogTitle>
+                </DialogHeader>
+                <div className="bg-white p-4 sm:p-6 rounded-lg">
+                  <div className="space-y-4 sm:space-y-6">
+                    <div>
+                      <Label htmlFor="parent-name" className="text-sm font-medium text-gray-700 mb-2 block">Name</Label>
+                      <Input
+                        id="parent-name"
+                        value={parentForm.name}
+                        onChange={(e) => setParentForm({...parentForm, name: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-username" className="text-sm font-medium text-gray-700 mb-2 block">Username</Label>
+                      <Input
+                        id="parent-username"
+                        value={parentForm.username}
+                        onChange={(e) => setParentForm({...parentForm, username: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-gender" className="text-sm font-medium text-gray-700 mb-2 block">Gender</Label>
+                      <Select value={parentForm.gender} onValueChange={(value: GenderType) => setParentForm({...parentForm, gender: value})}>
+                        <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
+                          <SelectItem value="Male" className="hover:bg-blue-50">Male</SelectItem>
+                          <SelectItem value="Female" className="hover:bg-blue-50">Female</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-student" className="text-sm font-medium text-gray-700 mb-2 block">Student</Label>
+                      <Select value={parentForm.student_id} onValueChange={(value) => setParentForm({...parentForm, student_id: value})}>
+                        <SelectTrigger className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border-gray-200 rounded-lg shadow-lg">
+                          {students.map(student => (
+                            <SelectItem key={student.id} value={student.id} className="hover:bg-blue-50">{student.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-contact" className="text-sm font-medium text-gray-700 mb-2 block">Contact</Label>
+                      <Input
+                        id="parent-contact"
+                        value={parentForm.contact}
+                        onChange={(e) => setParentForm({...parentForm, contact: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-email" className="text-sm font-medium text-gray-700 mb-2 block">Email</Label>
+                      <Input
+                        id="parent-email"
+                        type="email"
+                        value={parentForm.email}
+                        onChange={(e) => setParentForm({...parentForm, email: e.target.value})}
+                        className="h-10 sm:h-11 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="parent-password" className="text-sm font-medium text-gray-700 mb-2 block">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="parent-password"
+                          type={showPassword ? "text" : "password"}
+                          value={parentForm.password}
+                          onChange={(e) => setParentForm({...parentForm, password: e.target.value})}
+                          className="h-10 sm:h-11 pr-12 border-gray-200 focus:border-blue-500 focus:ring-blue-500/20 rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute inset-y-0 right-0 flex items-center pr-4 text-gray-400 hover:text-gray-600"
+                        >
+                          {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                        </button>
+                      </div>
+                    </div>
+                    <Button 
+                      onClick={handleAddUser} 
+                      className="w-full h-10 sm:h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                    >
+                      Add Parent
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          )}
+        </div>
+        
         <div className="overflow-x-auto">
           <Table>
             <TableHeader>

@@ -1,8 +1,9 @@
+
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Download, Plus } from 'lucide-react';
+import { Plus } from 'lucide-react';
 import { useAdminUsers } from '@/hooks/useAdminUsers';
 import AdminUserForm from '@/components/admin/AdminUserForm';
 import AdminUserTable from '@/components/admin/AdminUserTable';
@@ -21,9 +22,15 @@ interface AdminUser {
 
 interface AdminUserManagementProps {
   onUserCountChange: () => void;
+  showHeaderControls?: boolean;
+  renderCustomHeader?: (onExportCSV: () => void) => React.ReactNode;
 }
 
-const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountChange }) => {
+const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ 
+  onUserCountChange, 
+  showHeaderControls = true,
+  renderCustomHeader 
+}) => {
   const { adminUsers, addUser, updateUser, deleteUser } = useAdminUsers(onUserCountChange);
   const [filteredUsers, setFilteredUsers] = useState<AdminUser[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
@@ -100,34 +107,58 @@ const AdminUserManagement: React.FC<AdminUserManagementProps> = ({ onUserCountCh
 
   return (
     <Card className="bg-white border-gray-100 rounded-xl shadow-sm">
-      <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
-        <CardTitle className="text-xl font-semibold text-gray-800">Admins</CardTitle>
-        <div className="flex gap-3">
-          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogTrigger asChild>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
-                <Plus className="w-4 h-4 mr-2" /> Add Admin
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
-              <DialogHeader className="pb-4">
-                <DialogTitle className="text-xl font-semibold text-gray-800">Add Admin User</DialogTitle>
-              </DialogHeader>
-              <AdminUserForm
-                formData={adminForm}
-                onFormChange={handleFormChange}
-                onSubmit={handleAddUser}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
+      {showHeaderControls && (
+        <CardHeader className="flex flex-row items-center justify-between bg-gray-50/50 rounded-t-xl">
+          <CardTitle className="text-xl font-semibold text-gray-800">Admins</CardTitle>
+          <div className="flex gap-3">
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
+                  <Plus className="w-4 h-4 mr-2" /> Add Admin
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
+                <DialogHeader className="pb-4">
+                  <DialogTitle className="text-xl font-semibold text-gray-800">Add Admin User</DialogTitle>
+                </DialogHeader>
+                <AdminUserForm
+                  formData={adminForm}
+                  onFormChange={handleFormChange}
+                  onSubmit={handleAddUser}
+                />
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+      )}
+      
+      {renderCustomHeader && renderCustomHeader(exportToCSV)}
+      
       <CardContent className="p-6">
-        <div className="mb-6">
+        <div className="mb-6 flex justify-between items-center">
           <AdminUserSearch
             searchTerm={searchTerm}
             onSearchChange={setSearchTerm}
           />
+          {showHeaderControls && (
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-sm">
+                  <Plus className="w-4 h-4 mr-2" /> Add Admin
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md bg-white border-gray-100 rounded-xl shadow-lg">
+                <DialogHeader className="pb-4">
+                  <DialogTitle className="text-xl font-semibold text-gray-800">Add Admin User</DialogTitle>
+                </DialogHeader>
+                <AdminUserForm
+                  formData={adminForm}
+                  onFormChange={handleFormChange}
+                  onSubmit={handleAddUser}
+                />
+              </DialogContent>
+            </Dialog>
+          )}
         </div>
         
         <AdminUserTable

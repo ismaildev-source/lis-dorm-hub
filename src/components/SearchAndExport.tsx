@@ -7,9 +7,11 @@ import { Search, Download, Printer } from 'lucide-react';
 interface SearchAndExportProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
-  onExport: () => void;
-  onPrint: () => void;
+  onExport?: () => void;
+  onPrint?: () => void;
   placeholder?: string;
+  showExport?: boolean;
+  showPrint?: boolean;
 }
 
 const SearchAndExport = ({ 
@@ -17,7 +19,9 @@ const SearchAndExport = ({
   onSearchChange, 
   onExport, 
   onPrint,
-  placeholder = "Search..." 
+  placeholder = "Search...",
+  showExport = true,
+  showPrint = true
 }: SearchAndExportProps) => {
   return (
     <div className="flex flex-col sm:flex-row gap-4 items-center justify-between mb-6 print:hidden">
@@ -32,14 +36,18 @@ const SearchAndExport = ({
         />
       </div>
       <div className="flex gap-2">
-        <Button onClick={onPrint} variant="outline" size="sm">
-          <Printer className="w-4 h-4 mr-2" />
-          Print
-        </Button>
-        <Button onClick={onExport} variant="outline" size="sm">
-          <Download className="w-4 h-4 mr-2" />
-          Export CSV
-        </Button>
+        {showPrint && onPrint && (
+          <Button onClick={onPrint} variant="outline" size="sm">
+            <Printer className="w-4 h-4 mr-2" />
+            Print
+          </Button>
+        )}
+        {showExport && onExport && (
+          <Button onClick={onExport} variant="outline" size="sm">
+            <Download className="w-4 h-4 mr-2" />
+            Export CSV
+          </Button>
+        )}
       </div>
     </div>
   );
