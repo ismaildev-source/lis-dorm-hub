@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
@@ -34,9 +33,15 @@ interface StudentUser {
 
 interface StudentUserManagementProps {
   onUserCountChange: () => void;
+  showHeaderControls?: boolean;
+  renderCustomHeader?: (onExportCSV: () => void) => React.ReactNode;
 }
 
-const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ onUserCountChange }) => {
+const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ 
+  onUserCountChange,
+  showHeaderControls = true,
+  renderCustomHeader
+}) => {
   const { toast } = useToast();
   const [studentUsers, setStudentUsers] = useState<StudentUser[]>([]);
   const [filteredUsers, setFilteredUsers] = useState<StudentUser[]>([]);
@@ -226,183 +231,188 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({ onUserCou
 
   return (
     <Card>
-      <CardHeader className="flex flex-row items-center justify-between">
-        <CardTitle>Student Users</CardTitle>
-        <div className="flex gap-2">
-          <Button onClick={exportToCSV} variant="outline" size="sm">
-            <Download className="w-4 h-4 mr-2" />
-            Export CSV
-          </Button>
-          <Dialog open={openDialog} onOpenChange={setOpenDialog}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="w-4 h-4 mr-2" /> Add Student
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl">
-              <DialogHeader>
-                <DialogTitle>Add Student</DialogTitle>
-              </DialogHeader>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="student-name">Name</Label>
-                  <Input
-                    id="student-name"
-                    value={studentForm.name}
-                    onChange={(e) => setStudentForm({...studentForm, name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-username">Username</Label>
-                  <Input
-                    id="student-username"
-                    value={studentForm.username}
-                    onChange={(e) => setStudentForm({...studentForm, username: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-age">Age</Label>
-                  <Input
-                    id="student-age"
-                    type="number"
-                    value={studentForm.age}
-                    onChange={(e) => setStudentForm({...studentForm, age: parseInt(e.target.value)})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-grade">Grade Level</Label>
-                  <Select value={studentForm.grade_level} onValueChange={(value: GradeLevelType) => setStudentForm({...studentForm, grade_level: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="Year 9">Year 9</SelectItem>
-                      <SelectItem value="Year 10">Year 10</SelectItem>
-                      <SelectItem value="Year 11">Year 11</SelectItem>
-                      <SelectItem value="Year 12">Year 12</SelectItem>
-                      <SelectItem value="Year 13">Year 13</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="student-dob">Date of Birth</Label>
-                  <Input
-                    id="student-dob"
-                    type="date"
-                    value={studentForm.date_of_birth}
-                    onChange={(e) => setStudentForm({...studentForm, date_of_birth: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-stream">Stream</Label>
-                  <Select value={studentForm.stream} onValueChange={(value: StreamType) => setStudentForm({...studentForm, stream: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="A">A</SelectItem>
-                      <SelectItem value="B">B</SelectItem>
-                      <SelectItem value="C">C</SelectItem>
-                      <SelectItem value="D">D</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="student-room">Room</Label>
-                  <Select value={studentForm.room} onValueChange={(value) => setStudentForm({...studentForm, room: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {studentRooms.map(room => (
-                        <SelectItem key={room} value={room}>{room}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="student-shoe-rack">Shoe Rack Number</Label>
-                  <Input
-                    id="student-shoe-rack"
-                    value={studentForm.shoe_rack_number}
-                    onChange={(e) => setStudentForm({...studentForm, shoe_rack_number: e.target.value})}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Label htmlFor="student-address">Home Address</Label>
-                  <Input
-                    id="student-address"
-                    value={studentForm.home_address}
-                    onChange={(e) => setStudentForm({...studentForm, home_address: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-email">Email</Label>
-                  <Input
-                    id="student-email"
-                    type="email"
-                    value={studentForm.email}
-                    onChange={(e) => setStudentForm({...studentForm, email: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-password">Password</Label>
-                  <div className="relative">
+      {showHeaderControls && (
+        <CardHeader className="flex flex-row items-center justify-between">
+          <CardTitle>Student Users</CardTitle>
+          <div className="flex gap-2">
+            <Button onClick={exportToCSV} variant="outline" size="sm">
+              <Download className="w-4 h-4 mr-2" />
+              Export CSV
+            </Button>
+            <Dialog open={openDialog} onOpenChange={setOpenDialog}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="w-4 h-4 mr-2" /> Add Student
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto bg-white border border-gray-200 shadow-2xl">
+                <DialogHeader>
+                  <DialogTitle>Add Student</DialogTitle>
+                </DialogHeader>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="student-name">Name</Label>
                     <Input
-                      id="student-password"
-                      type={showPassword ? "text" : "password"}
-                      value={studentForm.password}
-                      onChange={(e) => setStudentForm({...studentForm, password: e.target.value})}
-                      className="pr-10"
+                      id="student-name"
+                      value={studentForm.name}
+                      onChange={(e) => setStudentForm({...studentForm, name: e.target.value})}
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
+                  </div>
+                  <div>
+                    <Label htmlFor="student-username">Username</Label>
+                    <Input
+                      id="student-username"
+                      value={studentForm.username}
+                      onChange={(e) => setStudentForm({...studentForm, username: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="student-age">Age</Label>
+                    <Input
+                      id="student-age"
+                      type="number"
+                      value={studentForm.age}
+                      onChange={(e) => setStudentForm({...studentForm, age: parseInt(e.target.value)})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="student-grade">Grade Level</Label>
+                    <Select value={studentForm.grade_level} onValueChange={(value: GradeLevelType) => setStudentForm({...studentForm, grade_level: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Year 9">Year 9</SelectItem>
+                        <SelectItem value="Year 10">Year 10</SelectItem>
+                        <SelectItem value="Year 11">Year 11</SelectItem>
+                        <SelectItem value="Year 12">Year 12</SelectItem>
+                        <SelectItem value="Year 13">Year 13</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="student-dob">Date of Birth</Label>
+                    <Input
+                      id="student-dob"
+                      type="date"
+                      value={studentForm.date_of_birth}
+                      onChange={(e) => setStudentForm({...studentForm, date_of_birth: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="student-stream">Stream</Label>
+                    <Select value={studentForm.stream} onValueChange={(value: StreamType) => setStudentForm({...studentForm, stream: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="A">A</SelectItem>
+                        <SelectItem value="B">B</SelectItem>
+                        <SelectItem value="C">C</SelectItem>
+                        <SelectItem value="D">D</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="student-room">Room</Label>
+                    <Select value={studentForm.room} onValueChange={(value) => setStudentForm({...studentForm, room: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {studentRooms.map(room => (
+                          <SelectItem key={room} value={room}>{room}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="student-shoe-rack">Shoe Rack Number</Label>
+                    <Input
+                      id="student-shoe-rack"
+                      value={studentForm.shoe_rack_number}
+                      onChange={(e) => setStudentForm({...studentForm, shoe_rack_number: e.target.value})}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Label htmlFor="student-address">Home Address</Label>
+                    <Input
+                      id="student-address"
+                      value={studentForm.home_address}
+                      onChange={(e) => setStudentForm({...studentForm, home_address: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="student-email">Email</Label>
+                    <Input
+                      id="student-email"
+                      type="email"
+                      value={studentForm.email}
+                      onChange={(e) => setStudentForm({...studentForm, email: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="student-password">Password</Label>
+                    <div className="relative">
+                      <Input
+                        id="student-password"
+                        type={showPassword ? "text" : "password"}
+                        value={studentForm.password}
+                        onChange={(e) => setStudentForm({...studentForm, password: e.target.value})}
+                        className="pr-10"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+                  <div>
+                    <Label htmlFor="student-supervisor">Supervisor</Label>
+                    <Select value={studentForm.supervisor_id} onValueChange={(value) => setStudentForm({...studentForm, supervisor_id: value})}>
+                      <SelectTrigger>
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {supervisors.map(supervisor => (
+                          <SelectItem key={supervisor.id} value={supervisor.id}>{supervisor.name}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div>
+                    <Label htmlFor="student-parent-name">Parent Name</Label>
+                    <Input
+                      id="student-parent-name"
+                      value={studentForm.parent_name}
+                      onChange={(e) => setStudentForm({...studentForm, parent_name: e.target.value})}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="student-parent-contact">Parent Contact</Label>
+                    <Input
+                      id="student-parent-contact"
+                      value={studentForm.parent_contact}
+                      onChange={(e) => setStudentForm({...studentForm, parent_contact: e.target.value})}
+                    />
+                  </div>
+                  <div className="col-span-2">
+                    <Button onClick={handleAddUser} className="w-full">
+                      Add Student
+                    </Button>
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="student-supervisor">Supervisor</Label>
-                  <Select value={studentForm.supervisor_id} onValueChange={(value) => setStudentForm({...studentForm, supervisor_id: value})}>
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {supervisors.map(supervisor => (
-                        <SelectItem key={supervisor.id} value={supervisor.id}>{supervisor.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div>
-                  <Label htmlFor="student-parent-name">Parent Name</Label>
-                  <Input
-                    id="student-parent-name"
-                    value={studentForm.parent_name}
-                    onChange={(e) => setStudentForm({...studentForm, parent_name: e.target.value})}
-                  />
-                </div>
-                <div>
-                  <Label htmlFor="student-parent-contact">Parent Contact</Label>
-                  <Input
-                    id="student-parent-contact"
-                    value={studentForm.parent_contact}
-                    onChange={(e) => setStudentForm({...studentForm, parent_contact: e.target.value})}
-                  />
-                </div>
-                <div className="col-span-2">
-                  <Button onClick={handleAddUser} className="w-full">
-                    Add Student
-                  </Button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </div>
-      </CardHeader>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </CardHeader>
+      )}
+
+      {renderCustomHeader && renderCustomHeader(exportToCSV)}
+
       <CardContent>
         {/* Search Bar */}
         <div className="mb-4 print:hidden">
