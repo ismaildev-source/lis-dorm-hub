@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
@@ -18,8 +19,7 @@ interface ParentUser {
   gender: GenderType;
   contact: string;
   email: string;
-  address: string;
-  student_ids: string[];
+  password?: string;
 }
 
 interface ParentUserManagementProps {
@@ -47,8 +47,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
     gender: 'Male' as GenderType, 
     contact: '', 
     email: '', 
-    address: '',
-    student_ids: [] as string[],
+    password: ''
   });
 
   useEffect(() => {
@@ -70,7 +69,19 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
     try {
       const { data, error } = await supabase.from('parent_users').select('*');
       if (error) throw error;
-      setParentUsers(data || []);
+      
+      // Transform database data to match interface
+      const transformedData = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        username: item.username,
+        gender: item.gender,
+        contact: item.contact || '',
+        email: item.email,
+        password: item.password
+      }));
+      
+      setParentUsers(transformedData);
     } catch (error) {
       console.error('Error fetching parent users:', error);
       toast({
@@ -84,7 +95,14 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
 
   const handleAddUser = async () => {
     try {
-      const { error } = await supabase.from('parent_users').insert([parentForm]);
+      const { error } = await supabase.from('parent_users').insert([{
+        name: parentForm.name,
+        username: parentForm.username,
+        gender: parentForm.gender,
+        contact: parentForm.contact,
+        email: parentForm.email,
+        password: parentForm.password
+      }]);
 
       if (error) throw error;
 
@@ -93,7 +111,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
         description: "Parent user added successfully",
       });
 
-      setParentForm({ name: '', username: '', gender: 'Male', contact: '', email: '', address: '', student_ids: [] });
+      setParentForm({ name: '', username: '', gender: 'Male', contact: '', email: '', password: '' });
       setOpenDialog(false);
       fetchParentUsers();
       onUserCountChange();
@@ -138,7 +156,14 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
     try {
       const { error } = await supabase
         .from('parent_users')
-        .update(editingItem)
+        .update({
+          name: editingItem.name,
+          username: editingItem.username,
+          gender: editingItem.gender,
+          contact: editingItem.contact,
+          email: editingItem.email,
+          password: editingItem.password
+        })
         .eq('id', editingItem.id);
 
       if (error) throw error;
@@ -162,7 +187,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
   };
 
   const exportToCSV = () => {
-    const headers = ['Name', 'Username', 'Gender', 'Contact', 'Email', 'Address', 'Student IDs'];
+    const headers = ['Name', 'Username', 'Gender', 'Contact', 'Email'];
     const csvContent = [
       headers.join(','),
       ...filteredUsers.map(user => [
@@ -170,9 +195,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
         user.username,
         user.gender,
         user.contact,
-        user.email,
-        user.address,
-        user.student_ids.join('; ')
+        user.email
       ].join(','))
     ].join('\n');
 

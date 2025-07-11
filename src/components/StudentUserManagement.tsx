@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogTrigger } from '@/components/ui/dialog';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Plus } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
@@ -10,7 +11,7 @@ import StudentUserTable from './students/StudentUserTable';
 import StudentUserSearch from './students/StudentUserSearch';
 
 type GenderType = 'Male' | 'Female';
-type GradeLevel = 'Grade 1' | 'Grade 2' | 'Grade 3' | 'Grade 4' | 'Grade 5' | 'Grade 6';
+type GradeLevel = 'Year 9' | 'Year 10' | 'Year 11' | 'Year 12' | 'Year 13';
 
 interface StudentUser {
   id: string;
@@ -51,7 +52,7 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
     username: '', 
     gender: 'Male' as GenderType, 
     date_of_birth: '', 
-    grade_level: 'Grade 1' as GradeLevel, 
+    grade_level: 'Year 9' as GradeLevel, 
     contact: '', 
     email: '', 
     address: '', 
@@ -59,7 +60,7 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
     password: ''
   });
 
-  const gradeLevels: GradeLevel[] = ['Grade 1', 'Grade 2', 'Grade 3', 'Grade 4', 'Grade 5', 'Grade 6'];
+  const gradeLevels: GradeLevel[] = ['Year 9', 'Year 10', 'Year 11', 'Year 12', 'Year 13'];
 
   useEffect(() => {
     fetchStudentUsers();
@@ -80,7 +81,23 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
     try {
       const { data, error } = await supabase.from('student_users').select('*');
       if (error) throw error;
-      setStudentUsers(data || []);
+      
+      // Transform database data to match interface
+      const transformedData = (data || []).map(item => ({
+        id: item.id,
+        name: item.name,
+        username: item.username,
+        gender: 'Male' as GenderType, // Default since not in database
+        date_of_birth: item.date_of_birth || '',
+        grade_level: item.grade_level,
+        contact: item.parent_contact || '',
+        email: item.email,
+        address: item.home_address || '',
+        parent_name: item.parent_name || '',
+        password: item.password
+      }));
+      
+      setStudentUsers(transformedData);
     } catch (error) {
       console.error('Error fetching student users:', error);
       toast({
@@ -94,7 +111,19 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
 
   const handleAddUser = async () => {
     try {
-      const { error } = await supabase.from('student_users').insert([studentForm]);
+      const { error } = await supabase.from('student_users').insert([{
+        name: studentForm.name,
+        username: studentForm.username,
+        date_of_birth: studentForm.date_of_birth,
+        grade_level: studentForm.grade_level,
+        parent_contact: studentForm.contact,
+        email: studentForm.email,
+        home_address: studentForm.address,
+        parent_name: studentForm.parent_name,
+        password: studentForm.password,
+        room: 'TBD', // Required field
+        stream: 'A' // Required field
+      }]);
 
       if (error) throw error;
 
@@ -108,7 +137,7 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
         username: '', 
         gender: 'Male', 
         date_of_birth: '', 
-        grade_level: 'Grade 1', 
+        grade_level: 'Year 9', 
         contact: '', 
         email: '', 
         address: '', 
@@ -159,7 +188,17 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
     try {
       const { error } = await supabase
         .from('student_users')
-        .update(editingItem)
+        .update({
+          name: editingItem.name,
+          username: editingItem.username,
+          date_of_birth: editingItem.date_of_birth,
+          grade_level: editingItem.grade_level,
+          parent_contact: editingItem.contact,
+          email: editingItem.email,
+          home_address: editingItem.address,
+          parent_name: editingItem.parent_name,
+          password: editingItem.password
+        })
         .eq('id', editingItem.id);
 
       if (error) throw error;
