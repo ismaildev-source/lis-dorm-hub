@@ -265,7 +265,7 @@ const ParentUserManagement: React.FC<ParentUserManagementProps> = ({
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
           onSubmit={handleAddUser}
-          formData={parentForm}
+          formData={{...parentForm, id: ''}}
           onFormChange={handleFormChange}
           title="Add Parent"
           submitText="Add Parent"

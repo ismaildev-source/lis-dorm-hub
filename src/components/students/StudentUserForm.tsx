@@ -49,6 +49,17 @@ const StudentUserForm: React.FC<StudentUserFormProps> = ({
   submitText,
   gradeLevels,
 }) => {
+  const isFormValid = () => {
+    return formData.name.trim() !== '' &&
+           formData.username.trim() !== '' &&
+           formData.date_of_birth.trim() !== '' &&
+           formData.grade_level.trim() !== '' &&
+           formData.contact.trim() !== '' &&
+           formData.email.trim() !== '' &&
+           formData.address.trim() !== '' &&
+           formData.parent_name.trim() !== '' &&
+           (formData.password === undefined || formData.password.trim() !== '');
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
@@ -167,7 +178,11 @@ const StudentUserForm: React.FC<StudentUserFormProps> = ({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={onSubmit}>
+            <Button 
+              onClick={onSubmit}
+              disabled={!isFormValid()}
+              className="disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
               {submitText}
             </Button>
           </div>

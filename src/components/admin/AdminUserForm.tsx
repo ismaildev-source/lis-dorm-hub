@@ -31,6 +31,13 @@ const AdminUserForm: React.FC<AdminUserFormProps> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
+  const isFormValid = () => {
+    return formData.name.trim() !== '' &&
+           formData.username.trim() !== '' &&
+           formData.email.trim() !== '' &&
+           formData.password.trim() !== '';
+  };
+
   return (
     <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
       <div className="space-y-6">
@@ -95,7 +102,8 @@ const AdminUserForm: React.FC<AdminUserFormProps> = ({
         </div>
         <Button 
           onClick={onSubmit} 
-          className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+          disabled={!isFormValid()}
+          className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg shadow-sm transition-colors"
         >
           {isEditing ? 'Update Admin User' : 'Add Admin'}
         </Button>

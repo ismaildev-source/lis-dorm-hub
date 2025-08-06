@@ -300,11 +300,11 @@ const StudentUserManagement: React.FC<StudentUserManagementProps> = ({
         />
 
         {/* Add Form */}
-        <StudentUserForm
+        <StudentUserForm 
           isOpen={openDialog}
           onClose={() => setOpenDialog(false)}
           onSubmit={handleAddUser}
-          formData={studentForm}
+          formData={{...studentForm, id: ''}}
           onFormChange={handleFormChange}
           showPassword={showPassword}
           onTogglePassword={() => setShowPassword(!showPassword)}

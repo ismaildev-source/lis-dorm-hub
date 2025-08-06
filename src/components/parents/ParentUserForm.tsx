@@ -37,6 +37,13 @@ const ParentUserForm: React.FC<ParentUserFormProps> = ({
   title,
   submitText,
 }) => {
+  const isFormValid = () => {
+    return formData.name.trim() !== '' &&
+           formData.username.trim() !== '' &&
+           formData.contact.trim() !== '' &&
+           formData.email.trim() !== '' &&
+           (formData.password === undefined || formData.password.trim() !== '');
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-md">
@@ -104,7 +111,11 @@ const ParentUserForm: React.FC<ParentUserFormProps> = ({
             <Button variant="outline" onClick={onClose}>
               Cancel
             </Button>
-            <Button onClick={onSubmit}>
+            <Button 
+              onClick={onSubmit}
+              disabled={!isFormValid()}
+              className="disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
               {submitText}
             </Button>
           </div>

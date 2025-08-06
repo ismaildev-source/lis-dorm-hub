@@ -55,6 +55,15 @@ const SupervisorUserForm: React.FC<SupervisorUserFormProps> = ({
   submitText,
   supervisorRooms
 }) => {
+  const isFormValid = () => {
+    return formData.name.trim() !== '' &&
+           formData.username.trim() !== '' &&
+           formData.date_of_birth.trim() !== '' &&
+           formData.room.trim() !== '' &&
+           formData.contact.trim() !== '' &&
+           formData.email.trim() !== '' &&
+           formData.password.trim() !== '';
+  };
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-2xl bg-white border-gray-100 rounded-xl shadow-lg">
@@ -155,7 +164,8 @@ const SupervisorUserForm: React.FC<SupervisorUserFormProps> = ({
             </div>
             <Button 
               onClick={onSubmit} 
-              className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+              disabled={!isFormValid()}
+              className="w-full h-12 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed text-white font-medium rounded-lg shadow-sm transition-colors"
             >
               {submitText}
             </Button>
