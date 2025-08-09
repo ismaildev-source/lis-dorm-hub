@@ -56,6 +56,8 @@ const AttendanceView = () => {
     setShowLogoutConfirm(false);
   };
 
+  const emptyMessage = user?.role === 'parent' ? 'No attendance has been taken yet for your child.' : undefined;
+
   return (
     <div className="min-h-screen bg-gray-50 w-full overflow-x-hidden">
       <AttendanceHeader
@@ -73,7 +75,7 @@ const AttendanceView = () => {
             </div>
           </div>
 
-          <AttendanceTable records={attendanceRecords} loading={loading} />
+          <AttendanceTable records={attendanceRecords} loading={loading} emptyMessage={emptyMessage} />
         </div>
       </div>
 
