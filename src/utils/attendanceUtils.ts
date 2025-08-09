@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 export interface User {
   id: string;
   role: string;
+  name?: string;
 }
 
 export const fetchAttendanceRecords = async (user: User | null) => {
