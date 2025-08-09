@@ -25,15 +25,23 @@ export const fetchAttendanceRecords = async (user: User | null) => {
     }
     // If user is a parent, filter by their child's records
     else if (user.role === 'parent') {
-      // First get the parent's student_id
-      const { data: parentData } = await supabase
+      // First get the parent's linked student_id
+      const { data: parentData, error: parentError } = await supabase
         .from('parent_users')
         .select('student_id')
         .eq('id', user.id)
-        .single();
+        .maybeSingle();
+
+      if (parentError) {
+        console.error('Error fetching parent data:', parentError);
+        return [];
+      }
       
       if (parentData?.student_id) {
         query = query.eq('student_id', parentData.student_id);
+      } else {
+        // Parent not linked to a student -> no records should be visible
+        return [];
       }
     }
 
