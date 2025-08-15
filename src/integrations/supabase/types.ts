@@ -281,6 +281,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      authenticate_user: {
+        Args: { p_password: string; p_username: string }
+        Returns: Json
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean

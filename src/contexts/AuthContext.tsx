@@ -2,6 +2,19 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 
+// Type definition for the authentication response
+interface AuthResponse {
+  success: boolean;
+  error?: string;
+  user?: {
+    id: string;
+    name: string;
+    username: string;
+    email: string;
+    role: 'admin' | 'supervisor' | 'parent' | 'student';
+  };
+}
+
 interface User {
   id: string;
   name: string;
@@ -54,46 +67,41 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       setLoading(true);
       
-      // Check all user tables for matching credentials
-      const tables = [
-        { table: 'admin_users' as const, role: 'admin' as const },
-        { table: 'supervisor_users' as const, role: 'supervisor' as const },
-        { table: 'parent_users' as const, role: 'parent' as const },
-        { table: 'student_users' as const, role: 'student' as const }
-      ];
+      // Use secure server-side authentication function
+      // This prevents credential exposure and performs authentication securely
+      const { data, error } = await supabase.rpc('authenticate_user', {
+        p_username: username,
+        p_password: password
+      });
 
-      for (const { table, role } of tables) {
-        console.log(`Checking ${table} for user: ${username}`);
-        
-        const { data, error } = await supabase
-          .from(table)
-          .select('*')
-          .eq('username', username)
-          .eq('password', password)
-          .single();
-
-        console.log(`Result for ${table}:`, { data, error });
-
-        if (data && !error) {
-          const newUser: User = {
-            id: data.id,
-            name: data.name,
-            username: data.username,
-            email: data.email,
-            role: role
-          };
-          
-          setUser(newUser);
-          localStorage.setItem('dormhub_user', JSON.stringify(newUser));
-          setLoading(false);
-          console.log('Login successful for:', newUser);
-          return { success: true, user: newUser };
-        }
+      if (error) {
+        console.error('Authentication error:', error);
+        setLoading(false);
+        return { success: false, error: 'Login failed. Please try again.' };
       }
+
+      // Parse the JSON response from the secure function
+      const authResponse = data as unknown as AuthResponse;
       
-      setLoading(false);
-      console.log('Login failed: Invalid credentials');
-      return { success: false, error: 'Invalid username or password' };
+      if (authResponse?.success && authResponse?.user) {
+        const newUser: User = {
+          id: authResponse.user.id,
+          name: authResponse.user.name,
+          username: authResponse.user.username,
+          email: authResponse.user.email,
+          role: authResponse.user.role
+        };
+        
+        setUser(newUser);
+        localStorage.setItem('dormhub_user', JSON.stringify(newUser));
+        setLoading(false);
+        console.log('Login successful for:', newUser);
+        return { success: true, user: newUser };
+      } else {
+        setLoading(false);
+        console.log('Login failed: Invalid credentials');
+        return { success: false, error: authResponse?.error || 'Invalid username or password' };
+      }
     } catch (error) {
       console.error('Login error:', error);
       setLoading(false);
